@@ -1,9 +1,10 @@
 package com.dev.ebankbackend.entities;
+
 import com.dev.ebankbackend.enums.AccountStatus;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
 import java.util.Date;
 import java.util.List;
 @Entity
@@ -19,7 +20,6 @@ public abstract class BankAccount {
     private AccountStatus status;
     @ManyToOne
     private Customer customer;
-
     @OneToMany(mappedBy = "bankAccount",fetch = FetchType.LAZY)
     private List<AccountOperation> accountOperations;
 }
