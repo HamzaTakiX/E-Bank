@@ -1,0 +1,112 @@
+
+ <!-- Dashboard Content -->
+ <div class="container-fluid mt-4">
+  <!-- Stats Cards -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="card bg-white">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
+              <i class="bi bi-people text-primary fs-4"></i>
+            </div>
+            <div class="ms-3">
+              <p class="text-muted mb-0">Total Customers</p>
+              <h4>24,531</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="bg-success bg-opacity-10 p-3 rounded-circle">
+              <i class="bi bi-currency-dollar text-success fs-4"></i>
+            </div>
+            <div class="ms-3">
+              <p class="text-muted mb-0">Total Deposits</p>
+              <h4>$12.4M</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="bg-warning bg-opacity-10 p-3 rounded-circle">
+              <i class="bi bi-graph-up text-warning fs-4"></i>
+            </div>
+            <div class="ms-3">
+              <p class="text-muted mb-0">Growth Rate</p>
+              <h4>+12.5%</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="bg-danger bg-opacity-10 p-3 rounded-circle">
+              <i class="bi bi-shield-check text-danger fs-4"></i>
+            </div>
+            <div class="ms-3">
+              <p class="text-muted mb-0">Risk Level</p>
+              <h4>Low</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Transaction Volume</h5>
+          <canvas id="transactionChart"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Customer Segments</h5>
+          <canvas id="segmentChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Customer Table -->
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Recent Customers</h5>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Account Type</th>
+              <th>Balance</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+              
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+ </div>
+
+ <!-- Add Bootstrap Icons -->

@@ -1,20 +1,19 @@
 <div class="container mt-2">
-  <ng-container *ngIf="customers | async as listCustomers ; else errorsOrLoading">
+  <ng-container *ngIf="customers | async as listCustomers; else failureOrLading">
     <div class="card">
       <div class="card-header">Customers</div>
       <div class="card-body">
         <div *ngIf="searchFormGroup">
           <form [formGroup]="searchFormGroup" (ngSubmit)="handleSearchCustomers()">
             <div class="input-group">
-              <label class="input-group-text">keyword :</label>
+              <label class="input-group-text">Keyword :</label>
               <input type="text" formControlName="keyword" class="form-control">
-              <button class="btn btn-dark">
+              <button class="btn btn-info">
                 <i class="bi bi-search"></i>
               </button>
             </div>
           </form>
         </div>
-
         <table class="table">
           <thead>
           <tr>
@@ -23,13 +22,17 @@
           </thead>
           <tbody>
           <tr *ngFor="let c of customers | async">
-            <!--         | async determine que customer est de type Observable + subscribe-->
             <td>{{c.id}}</td>
             <td>{{c.name}}</td>
             <td>{{c.email}}</td>
             <td>
               <button (click)="handleDeleteCustomer(c)" class="btn btn-danger">
-                <i class="bi bi-trash2-fill"></i>
+                <i class="bi bi-trash"></i>
+              </button>
+            </td>
+            <td>
+              <button (click)="handleCustomerAccounts(c)" class="btn btn-success">
+                Accounts
               </button>
             </td>
           </tr>
@@ -38,17 +41,14 @@
       </div>
     </div>
   </ng-container>
-  <ng-template #errorsOrLoading>
-    <ng-container *ngIf="errorMessage ; else loading">
+  <ng-template #failureOrLading>
+    <ng-container *ngIf="errorMessage; else loading">
       <div class="text-danger">
         {{errorMessage}}
       </div>
     </ng-container>
     <ng-template #loading>
-      Loading ...
+      Loading .....
     </ng-template>
-
-
   </ng-template>
-
 </div>
