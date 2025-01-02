@@ -5,6 +5,7 @@ import com.dev.ebankbackend.dtos.*;
 import com.dev.ebankbackend.exceptions.BalanceNotSufficientException;
 import com.dev.ebankbackend.exceptions.BankAccountNotFoundException;
 import com.dev.ebankbackend.services.BankAccountService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

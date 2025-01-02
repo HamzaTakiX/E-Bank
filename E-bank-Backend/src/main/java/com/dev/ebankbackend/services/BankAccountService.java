@@ -8,11 +8,19 @@ import com.dev.ebankbackend.exceptions.BankAccountNotFoundException;
 import com.dev.ebankbackend.exceptions.CustomerNotFoundException;
 
 import java.util.List;
+import java.util.Map;
+
 public interface BankAccountService {
     CustomerDTO saveCustomer(CustomerDTO customerDTO);
     CurrentBankAccountDTO saveCurrentBankAccount(double initialBalance, double overDraft, Long customerId) throws CustomerNotFoundException;
     SavingBankAccountDTO saveSavingBankAccount(double initialBalance, double interestRate, Long customerId) throws CustomerNotFoundException;
     List<CustomerDTO> listCustomers();
+    List<BankAccountDTO> getLatestBankAccounts() throws BankAccountNotFoundException;
+    Double getMonthlyTransactionSum();
+    List<Map<String, Object>> getMonthlyTransactionVolume();
+    List<Map<String, Object>> BankAccountsByType();
+    Double getTotalBalanceSum();
+    Long getTotalNumberOfBankAccounts();
     BankAccountDTO getBankAccount(String accountId) throws BankAccountNotFoundException;
     void debit(String accountId, double amount, String description) throws BankAccountNotFoundException, BalanceNotSufficientException;
     void credit(String accountId, double amount, String description) throws BankAccountNotFoundException;

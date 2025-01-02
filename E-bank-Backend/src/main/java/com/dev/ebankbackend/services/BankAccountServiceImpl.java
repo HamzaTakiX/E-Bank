@@ -18,9 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -98,6 +96,66 @@ public class BankAccountServiceImpl implements BankAccountService {
             CurrentAccount currentAccount= (CurrentAccount) bankAccount;
             return dtoMapper.fromCurrentBankAccount(currentAccount);
         }
+    }
+
+    @Override
+    public List<BankAccountDTO> getLatestBankAccounts() throws BankAccountNotFoundException {
+        List<BankAccount> bankAccounts = bankAccountRepository.findTop5LatestAccounts();
+
+        if (bankAccounts.isEmpty()) {
+            throw new BankAccountNotFoundException("No bank accounts found");
+        }
+
+        return bankAccounts.stream().map(bankAccount -> {
+            if (bankAccount instanceof SavingAccount) {
+                return dtoMapper.fromSavingBankAccount((SavingAccount) bankAccount);
+            } else {
+                return dtoMapper.fromCurrentBankAccount((CurrentAccount) bankAccount);
+            }
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    public Double getMonthlyTransactionSum() {
+        return accountOperationRepository.getTransactionSumForCurrentMonth();
+    }
+    @Override
+    public Double getTotalBalanceSum() {
+        return bankAccountRepository.getTotalBalanceSum();
+    }
+    @Override
+    public Long getTotalNumberOfBankAccounts() {
+        return bankAccountRepository.getTotalNumberOfBankAccounts();
+    }
+
+    @Override
+    public List<Map<String, Object>> getMonthlyTransactionVolume() {
+        List<Object[]> results = accountOperationRepository.getMonthlyTransactionVolume();
+        List<Map<String, Object>> monthlyVolumes = new ArrayList<>();
+
+        for (Object[] result : results) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("year", result[0]);
+            map.put("month", result[1]);
+            map.put("volume", result[2]);
+            monthlyVolumes.add(map);
+        }
+        return monthlyVolumes;
+    }
+    @Override
+    public List<Map<String, Object>> BankAccountsByType(){
+        List<Object[]> results = bankAccountRepository.countBankAccountsByType();
+        List<Map<String, Object>> AccountsByType = new ArrayList<>();
+        for (Object[] result : results) {
+            Class<?> accountType = (Class<?>) result[0];
+            Long count = (Long) result[1];
+            String typeName = accountType.getSimpleName();
+            Map<String, Object> map = new HashMap<>();
+            map.put("type", typeName);
+            map.put("count", count);
+            AccountsByType.add(map);
+        }
+        return AccountsByType;
     }
 
     @Override

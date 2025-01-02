@@ -22,7 +22,9 @@ import org.springframework.context.annotation.Bean;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @SpringBootApplication
@@ -31,82 +33,58 @@ public class EBankBackendApplication {
     public static void main(String[] args) {
         SpringApplication.run(EBankBackendApplication.class, args);
     }
-    @Bean
-    CommandLineRunner commandLineRunner(BankAccountService bankAccountService){
-        return args -> {
-            Stream.of("Ayman","Ahmed","Salah").forEach(name->{
-                CustomerDTO customer=new CustomerDTO();
-                customer.setName(name);
-                customer.setEmail(name+"@gmail.com");
-                bankAccountService.saveCustomer(customer);
-            });
-            bankAccountService.listCustomers().forEach(customer->{
-                try {
-                    bankAccountService.saveCurrentBankAccount(Math.random()*90000,9000,customer.getId());
-                    bankAccountService.saveSavingBankAccount(Math.random()*120000,5.5,customer.getId());
 
-                } catch (CustomerNotFoundException e) {
-                    e.printStackTrace();
-                }
-            });
-            List<BankAccountDTO> bankAccounts = bankAccountService.bankAccountList();
-            for (BankAccountDTO bankAccount:bankAccounts){
-                for (int i = 0; i <10 ; i++) {
-                    String accountId;
-                    if(bankAccount instanceof SavingBankAccountDTO){
-                        accountId=((SavingBankAccountDTO) bankAccount).getId();
-                    } else{
-                        accountId=((CurrentBankAccountDTO) bankAccount).getId();
-                    }
-                    bankAccountService.credit(accountId,10000+Math.random()*120000,"Credit");
-                    bankAccountService.debit(accountId,1000+Math.random()*9000,"Debit");
-                }
-            }
-        };
+    private Date generateRandomDate(int startYear, int endYear) {
+        Random random = new Random();
+        int year = startYear + random.nextInt(endYear - startYear + 1);
+        int dayOfYear = 1 + random.nextInt(365); // 1 to 365
+        return new Date(year - 1900, 0, 1 + dayOfYear);
     }
+
+
     @Bean
     CommandLineRunner start(CustomerRepository customerRepository,
                             BankAccountRepository bankAccountRepository,
-                            AccountOperationRepository accountOperationRepository){
+                            AccountOperationRepository accountOperationRepository) {
         return args -> {
-            Stream.of("Hamza","Ayoub","Youssef").forEach(name->{
-                Customer customer=new Customer();
-                customer.setName(name);
-                customer.setEmail(name+"@gmail.com");
-                customerRepository.save(customer);
-            });
-            customerRepository.findAll().forEach(cust->{
-                CurrentAccount currentAccount=new CurrentAccount();
+            Stream.of("Hamza", "Ayoub", "Youssef", "Meryem", "Hajar", "Amine", "Nadia")
+                    .forEach(name -> {
+                        Customer customer = new Customer();
+                        customer.setName(name);
+                        customer.setEmail(name.toLowerCase() + "@example.com");
+                        customerRepository.save(customer);
+                    });
+
+            customerRepository.findAll().forEach(cust -> {
+                CurrentAccount currentAccount = new CurrentAccount();
                 currentAccount.setId(UUID.randomUUID().toString());
-                currentAccount.setBalance(Math.random()*90000);
-                currentAccount.setCreatedAt(new Date());
-                currentAccount.setStatus(AccountStatus.CREATED);
+                currentAccount.setBalance(5000 + Math.random() * 80000);
+                currentAccount.setCreatedAt(generateRandomDate(2020, 2025));
+                currentAccount.setStatus(AccountStatus.ACTIVATED);
                 currentAccount.setCustomer(cust);
-                currentAccount.setOverDraft(9000);
+                currentAccount.setOverDraft(1000 + Math.random() * 5000);
                 bankAccountRepository.save(currentAccount);
 
-                SavingAccount savingAccount=new SavingAccount();
+                SavingAccount savingAccount = new SavingAccount();
                 savingAccount.setId(UUID.randomUUID().toString());
-                savingAccount.setBalance(Math.random()*90000);
-                savingAccount.setCreatedAt(new Date());
-                savingAccount.setStatus(AccountStatus.CREATED);
+                savingAccount.setBalance(10000 + Math.random() * 100000);
+                savingAccount.setCreatedAt(generateRandomDate(2020, 2025));
+                savingAccount.setStatus(AccountStatus.ACTIVATED);
                 savingAccount.setCustomer(cust);
-                savingAccount.setInterestRate(5.5);
+                savingAccount.setInterestRate(3.0 + Math.random() * 2.0);
                 bankAccountRepository.save(savingAccount);
-
             });
-            bankAccountRepository.findAll().forEach(acc->{
-                for (int i = 0; i <10 ; i++) {
-                    AccountOperation accountOperation=new AccountOperation();
-                    accountOperation.setOperationDate(new Date());
-                    accountOperation.setAmount(Math.random()*12000);
-                    accountOperation.setType(Math.random()>0.5? OperationType.DEBIT: OperationType.CREDIT);
+
+            bankAccountRepository.findAll().forEach(acc -> {
+                IntStream.range(0, 10).forEach(i -> {
+                    AccountOperation accountOperation = new AccountOperation();
+                    accountOperation.setOperationDate(generateRandomDate(2023, 2025));
+                    accountOperation.setAmount(100 + Math.random() * 20000);
+                    accountOperation.setType(Math.random() > 0.5 ? OperationType.DEBIT : OperationType.CREDIT);
                     accountOperation.setBankAccount(acc);
                     accountOperationRepository.save(accountOperation);
-                }
-
+                });
             });
         };
-
     }
 }

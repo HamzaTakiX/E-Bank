@@ -12,7 +12,38 @@
             </div>
             <div class="ms-3">
               <p class="text-muted mb-0">Total Customers</p>
-              <h4>24,531</h4>
+              <h4>{{ dashboardData.totalNumberOfCustomers }}</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card bg-white">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
+              <i class="bi bi-bank text-primary fs-4"></i>
+            </div>
+            <div class="ms-3">
+              <p class="text-muted mb-0">Total Accounts</p>
+              <h4>{{ dashboardData.totalNumberOfBankAccounts }}</h4>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="bg-warning bg-opacity-10 p-3 rounded-circle">
+              <i class="bi bi-graph-up text-warning fs-4"></i>
+            </div>
+            <div class="ms-3">
+              <p class="text-muted mb-0">Month Transaction</p>
+              <h4>{{dashboardData.monthlyTransactionSum}}</h4>
             </div>
           </div>
         </div>
@@ -27,37 +58,7 @@
             </div>
             <div class="ms-3">
               <p class="text-muted mb-0">Total Deposits</p>
-              <h4>$12.4M</h4>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex align-items-center">
-            <div class="bg-warning bg-opacity-10 p-3 rounded-circle">
-              <i class="bi bi-graph-up text-warning fs-4"></i>
-            </div>
-            <div class="ms-3">
-              <p class="text-muted mb-0">Growth Rate</p>
-              <h4>+12.5%</h4>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex align-items-center">
-            <div class="bg-danger bg-opacity-10 p-3 rounded-circle">
-              <i class="bi bi-shield-check text-danger fs-4"></i>
-            </div>
-            <div class="ms-3">
-              <p class="text-muted mb-0">Risk Level</p>
-              <h4>Low</h4>
+              <h4>{{dashboardData.totalBalanceSum}}</h4>
             </div>
           </div>
         </div>
@@ -78,35 +79,117 @@
     <div class="col-md-6">
       <div class="card">
         <div class="card-body">
-          <h5 class="card-title">Customer Segments</h5>
+          <h5 class="card-title">Bank Segments</h5>
           <canvas id="segmentChart"></canvas>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Customer Table -->
   <div class="card">
     <div class="card-body">
-      <h5 class="card-title">Recent Customers</h5>
-      <div class="table-responsive">
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Account Type</th>
-              <th>Balance</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-              
-          </tbody>
-        </table>
-      </div>
+      <h5 class="card-title">Recent Accounts</h5>
+      <div class="container">
+        <div class="shadow-md">
+          <div class="card-body p-0">
+            <div class="d-flex text-muted border-bottom p-3">
+              <div class="col-3">Name</div>
+              <div class="col-3">Account Type</div>
+              <div class="col-3">Balance</div>
+              <div class="col-2">Status</div>
+              <div class="col-2">Action</div>
+            </div>
+
+            <div class="user-list">
+              <div class="d-flex align-items-center border-bottom p-3 hover-bg-light" *ngFor="let account of dashboardData.latestBankAccounts">
+                <div class="col-3 d-flex align-items-center">
+                  <div class="rounded-circle  text-white d-flex align-items-center justify-content-center me-3"
+                       style="width: 40px; height: 40px; background-color: #3E5879;">
+                    {{account.customerDTO.name.charAt(0)}}
+                  </div>
+                  <div class="d-flex flex-column">
+                    <span class="text-dark">{{ account.customerDTO.name }}</span>
+                    <small class="text-muted">Added: {{ account.createdAt | date }}</small>
+                  </div>
+                </div>
+                <div class="col-3">
+                  <span class="text-dark">{{ account.type }}</span>
+                </div>
+                <div class="col-3">
+                  <span class="text-dark">${{ account.balance | number: '1.2-2' }}</span>
+                </div>
+                <div class="col-2">
+                  <span *ngIf="account.status === 'ACTIVATED'" class="badge rounded-pill bg-success-subtle text-success">
+                    {{ account.status }}
+                  </span>
+                  <span *ngIf="account.status === 'SUSPENDED'" class="badge rounded-pill bg-danger-subtle text-danger">
+                    {{ account.status }}
+                  </span>
+                  <span *ngIf="account.status === 'CREATED'" class="badge rounded-pill bg-warning-subtle text-warning">
+                    {{ account.status }}
+                  </span>
+                </div>
+                <div class="col-2">
+                  <a href='/customer-accounts/{{account.id}}' class="btn btn-sm btn-outline-primary" style="width: 100px;" >View</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+       </div>
     </div>
   </div>
  </div>
 
- <!-- Add Bootstrap Icons -->
+ <style>
+  .hover-bg-light:hover {
+   background-color: #f8f9fa;
+   cursor: pointer;
+  }
+
+  .badge {
+   font-weight: normal;
+   padding: 8px 12px;
+  }
+
+  .bg-success-subtle {
+   background-color: #d1e7dd !important;
+  }
+
+  .bg-warning-subtle {
+   background-color: #fff3cd !important;
+  }
+
+  .bg-danger-subtle {
+    background-color: #ff8888 !important;
+   }
+
+  .user-list > div {
+   transition: background-color 0.2s ease;
+  }
+
+  .user-list > div:hover {
+   background-color: #f8f9fa;
+  }
+
+  .card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  }
+
+  .rounded-circle {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  canvas {
+    max-height: 300px;
+  }
+  </style>
