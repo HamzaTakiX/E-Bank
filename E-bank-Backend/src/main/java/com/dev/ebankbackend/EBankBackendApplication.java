@@ -52,6 +52,7 @@ public class EBankBackendApplication {
                         Customer customer = new Customer();
                         customer.setName(name);
                         customer.setEmail(name.toLowerCase() + "@example.com");
+                        customer.setPassword(name.toLowerCase() + "123");
                         customerRepository.save(customer);
                     });
 

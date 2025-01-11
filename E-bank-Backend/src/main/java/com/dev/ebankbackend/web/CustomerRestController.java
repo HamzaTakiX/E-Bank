@@ -1,6 +1,7 @@
 package com.dev.ebankbackend.web;
 
 import com.dev.ebankbackend.dtos.CustomerDTO;
+import com.dev.ebankbackend.dtos.NewCustomerDTO;
 import com.dev.ebankbackend.exceptions.CustomerNotFoundException;
 import com.dev.ebankbackend.services.BankAccountService;
 import lombok.AllArgsConstructor;
@@ -29,8 +30,8 @@ public class CustomerRestController {
         return bankAccountService.getCustomer(customerId);
     }
     @PostMapping("/customers")
-    public CustomerDTO saveCustomer(@RequestBody CustomerDTO customerDTO){
-        return bankAccountService.saveCustomer(customerDTO);
+    public NewCustomerDTO saveCustomer(@RequestBody NewCustomerDTO newCustomerDTO){
+        return bankAccountService.saveCustomer(newCustomerDTO);
     }
     @PutMapping("/customers/{customerId}")
     public CustomerDTO updateCustomer(@PathVariable Long customerId, @RequestBody CustomerDTO customerDTO){

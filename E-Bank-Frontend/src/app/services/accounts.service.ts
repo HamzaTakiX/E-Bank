@@ -3,6 +3,7 @@ import {HttpClient} from "@angular/common/http";
 import {environment} from "../../environments/environment";
 import {Observable} from "rxjs";
 import {AccountDetails} from "../model/account.model";
+import { Transaction } from '../model/transaction.model';
 
 @Injectable({
   providedIn: 'root'
@@ -25,5 +26,8 @@ export class AccountsService {
   public transfer(accountSource: string,accountDestination: string, amount : number, description:string){
     let data={accountSource, accountDestination, amount, description }
     return this.http.post(environment.backendHost+"/accounts/transfer",data);
+  }
+  public getAllAccountsHistory(page : number, size : number): Observable<Transaction[]> {
+    return this.http.get<Transaction[]>(environment.backendHost+"/accounts/history?page="+page+"&size="+size);
   }
 }

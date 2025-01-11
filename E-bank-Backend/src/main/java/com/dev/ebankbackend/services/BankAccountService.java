@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface BankAccountService {
-    CustomerDTO saveCustomer(CustomerDTO customerDTO);
+    NewCustomerDTO saveCustomer(NewCustomerDTO newCustomerDTO);
     CurrentBankAccountDTO saveCurrentBankAccount(double initialBalance, double overDraft, Long customerId) throws CustomerNotFoundException;
     SavingBankAccountDTO saveSavingBankAccount(double initialBalance, double interestRate, Long customerId) throws CustomerNotFoundException;
     List<CustomerDTO> listCustomers();
@@ -25,7 +25,7 @@ public interface BankAccountService {
     void debit(String accountId, double amount, String description) throws BankAccountNotFoundException, BalanceNotSufficientException;
     void credit(String accountId, double amount, String description) throws BankAccountNotFoundException;
     void transfer(String accountIdSource, String accountIdDestination, double amount) throws BankAccountNotFoundException, BalanceNotSufficientException;
-
+    List<TransactionDTO> getAllAccountsHistory( int page, int size) throws BankAccountNotFoundException;
     List<BankAccountDTO> bankAccountList();
 
     CustomerDTO getCustomer(Long customerId) throws CustomerNotFoundException;

@@ -23,6 +23,16 @@
             Email is not valid
           </span>
         </div>
+        <div class="mb-3">
+          <label class="form-label">Password:</label>
+          <input type="text" formControlName="password" class="form-control">
+          <span class="text-danger"
+                *ngIf="newCustomerFormGroup.controls['password'].touched
+                && newCustomerFormGroup.controls['password'].errors
+                && newCustomerFormGroup.controls['password'].errors!['password']">
+            Password is not valid
+          </span>
+        </div>
         <button [disabled]="!newCustomerFormGroup.valid" class="btn btn-info">Save</button>
       </form>
     </div>

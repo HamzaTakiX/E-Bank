@@ -32,10 +32,10 @@ public class BankAccountServiceImpl implements BankAccountService {
     private BankAccountMapperImpl dtoMapper;
 
     @Override
-    public CustomerDTO saveCustomer(CustomerDTO customerDTO) {
-        Customer customer=dtoMapper.fromCustomerDTO(customerDTO);
+    public NewCustomerDTO saveCustomer(NewCustomerDTO newCustomerDTO) {
+        Customer customer=dtoMapper.fromNewCustomerDTO(newCustomerDTO);
         Customer savedCustomer = customerRepository.save(customer);
-        return dtoMapper.fromCustomer(savedCustomer);
+        return dtoMapper.fromCustomerV2(savedCustomer);
     }
 
     @Override
@@ -232,7 +232,11 @@ public class BankAccountServiceImpl implements BankAccountService {
         List<AccountOperation> accountOperations = accountOperationRepository.findByBankAccountId(accountId);
         return accountOperations.stream().map(op->dtoMapper.fromAccountOperation(op)).collect(Collectors.toList());
     }
-
+    @Override
+    public List<TransactionDTO> getAllAccountsHistory( int page, int size) {
+        Page<AccountOperation> accountOperations = accountOperationRepository.findAllByOrderByOperationDateDesc(PageRequest.of(page, size));
+        return accountOperations.stream().map(op->dtoMapper.fromAccountOperationV2(op)).collect(Collectors.toList());
+    }
     @Override
     public AccountHistoryDTO getAccountHistory(String accountId, int page, int size) throws BankAccountNotFoundException {
         BankAccount bankAccount=bankAccountRepository.findById(accountId).orElse(null);

@@ -10,7 +10,6 @@ export class DashboardService {
   constructor(private http: HttpClient) { }
 
   public getDashboardInfo(): Observable<any> {
-    console.log("DashboardService.getDashboardInfo()");
     return this.http.get<any>(`${environment.backendHost}/dashboard/dataV1`);
   }
 
