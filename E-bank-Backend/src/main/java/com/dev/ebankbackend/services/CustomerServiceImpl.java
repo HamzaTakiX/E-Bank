@@ -32,7 +32,7 @@ public class CustomerServiceImpl implements CustomerService{
         }
         return null;
     }
-    @Override
+    @Override       
     public List<CustomerLoginDTO> getAllCustomer() {
         List<Customer> data = customerRepository.findAll();
         List<CustomerLoginDTO> customers = data.stream()

@@ -31,7 +31,9 @@ export class AuthService {
     let decodedJwt:any = jwtDecode(this.accessToken);
     this.username = decodedJwt.sub;
     this.roles = decodedJwt.scope;
+    console.log(this.roles);
     window.localStorage.setItem('jwt-token', this.accessToken);
+    return this.roles;
   }
 
   logout() {
@@ -46,7 +48,7 @@ export class AuthService {
   loadJwtTokenFromLocalStorage() {
     let token = window.localStorage.getItem('jwt-token');
     if (token) {
-      this.loadProfile({"access-token": token});
+      this.loadProfile({"access-token": token});;
       this.router.navigateByUrl("/admin/dashboard");
     }
   }

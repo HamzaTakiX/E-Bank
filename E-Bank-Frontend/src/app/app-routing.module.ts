@@ -15,19 +15,18 @@ import {NotAuthorizedComponent} from "./not-authorized/not-authorized.component"
 const routes: Routes = [
   { path : "login", component : LoginComponent},
   { path : "", redirectTo : "/login", pathMatch :"full"},
-  { path : "admin", component: AdminTemplateComponent, canActivate : [AuthenticationGuard] ,
+  { path : "admin", component: AdminTemplateComponent, canActivate : [AuthenticationGuard],
     children:[
-      { path :"home", component : DashboardComponent},
-      { path :"customers", component : CustomersComponent},
-      { path :"accounts", component : AccountsComponent},
-      { path :"new-customer", component : NewCustomerComponent, canActivate : [AuthorizationGuard], },
-      { path :"customer-accounts/:id", component : CustomerAccountsComponent},
-      { path : "transactions", component : TransactionsHistoryComponent },
-      { path : "notAuthorized", component : NotAuthorizedComponent },
+      { path :"home", component : DashboardComponent ,canActivate : [AuthorizationGuard], data : {role : 'ADMIN'}},
+      { path :"customers", component : CustomersComponent,canActivate : [AuthorizationGuard], data : {role : 'ADMIN'}},
+      { path :"accounts", component : AccountsComponent,canActivate : [AuthorizationGuard], data : {role : 'ADMIN'}},
+      { path :"new-customer", component : NewCustomerComponent, canActivate : [AuthorizationGuard], data : {role : 'ADMIN'}},
+      { path :"customer-accounts/:id", component : CustomerAccountsComponent,canActivate : [AuthorizationGuard], data : {role : 'ADMIN'}},
+      { path : "transactions", component : TransactionsHistoryComponent ,canActivate : [AuthorizationGuard], data : {role : 'ADMIN'}},
+      { path : "notAuthorized", component : NotAuthorizedComponent ,canActivate : [AuthorizationGuard], data : {role : 'ADMIN'}},
     ]},
-    
-
-  {path :"**", redirectTo : "login"}
+    {path :'home', component : DashboardComponent, canActivate : [AuthenticationGuard]},
+    {path :"**", redirectTo : "login"}
 ];
 
 @NgModule({
