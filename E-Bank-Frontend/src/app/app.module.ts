@@ -14,6 +14,7 @@ import { CustomerAccountsComponent } from './customer-accounts/customer-accounts
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { TransactionsHistoryComponent } from './transactions-history/transactions-history.component';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { AccountService } from './services/account.service';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,9 @@ import { NgxPaginationModule } from 'ngx-pagination';
     ReactiveFormsModule,
     NgxPaginationModule
   ],
-  providers: [],
+  providers: [
+    AccountService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

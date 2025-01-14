@@ -1,8 +1,10 @@
-<nav class="navbar navbar-expand-lg p-3" style="background: #3E5879;">
+<nav class="navbar navbar-expand-lg p-3">
   <div class="container">
-    <a class="navbar-brand text-white" routerLink="/"
-       style="font-size: 1.5rem; font-weight: 500; text-transform: uppercase;">
-      <i class="bi bi-bank2"></i>  E-bank
+    <a class="navbar-brand" routerLink="/">
+      <div class="brand-icon">
+        <i class="bi bi-bank2"></i>
+      </div>
+      <span class="brand-text" style="font-size: 1.5rem; font-weight: 500; text-transform: uppercase;">E-bank</span>
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
@@ -10,47 +12,51 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link text-white position-relative px-4" routerLink="/"
+          <a class="nav-link text-white position-relative px-4" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
              style="transition: all 0.3s;"
              onmouseover="this.style.transform='translateY(-3px)';this.style.color='#2196f3';"
              onmouseout="this.style.transform='translateY(0)';this.style.color='#fff';">
-            <i class="bi bi-house me-2"></i>Home
+            <i class="bi bi-house me-2"></i>
+            <span>Home</span>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white position-relative px-4" routerLink="/accounts"
+          <a class="nav-link text-white position-relative px-4" routerLink="/accounts" routerLinkActive="active"
              style="transition: all 0.3s;"
              onmouseover="this.style.transform='translateY(-3px)';this.style.color='#ff4081';"
              onmouseout="this.style.transform='translateY(0)';this.style.color='#fff';">
-         <i class="bi bi-wallet2 me-2"></i>Accounts
+            <i class="bi bi-wallet2 me-2"></i>
+            <span>Accounts</span>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white position-relative px-4" routerLink="/customers"
+          <a class="nav-link text-white position-relative px-4" routerLink="/customers" routerLinkActive="active"
              style="transition: all 0.3s;"
              onmouseover="this.style.transform='translateY(-3px)';this.style.color='#4caf50';"
              onmouseout="this.style.transform='translateY(0)';this.style.color='#fff';">
-            <i class="bi bi-people me-2"></i>Custormers
+            <i class="bi bi-people me-2"></i>
+            <span>Customers</span>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white position-relative px-4" routerLink="/transactions"
+          <a class="nav-link text-white position-relative px-4" routerLink="/transactions" routerLinkActive="active"
              style="transition: all 0.3s;"
              onmouseover="this.style.transform='translateY(-3px)';this.style.color='#4caf50';"
              onmouseout="this.style.transform='translateY(0)';this.style.color='#fff';">
-            <i class="bi bi-cash me-2"></i>Transactions
+            <i class="bi bi-cash me-2"></i>
+            <span>Transactions</span>
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white position-relative px-4" routerLink="/"
+          <a class="nav-link text-white position-relative px-4" routerLink="/chatbot" routerLinkActive="active"
              style="transition: all 0.3s;"
              onmouseover="this.style.transform='translateY(-3px)';this.style.color='#4caf50';"
              onmouseout="this.style.transform='translateY(0)';this.style.color='#fff';">
-            <i class="bi bi-robot me-2"></i>ChatBot
+            <i class="bi bi-robot me-2"></i>
+            <span>ChatBot</span>
           </a>
         </li>
       </ul>
     </div>
   </div>
- </nav>
-
+</nav>

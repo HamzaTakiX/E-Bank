@@ -1,94 +1,312 @@
-<div class="container mt-2">
-  <div class="row">
-    <div class="col col-md-6">
-      <div class="card">
-        <div class="card-header">Accounts</div>
-        <div class="card-body">
-          <form [formGroup]="accountFormGroup" (ngSubmit)="handleSearchAccount()">
-            <div class="input-group">
-              <label class="input-group-text">Account Id :</label>
-              <input type="text" formControlName="accountId" class="form-control">
-              <button class="btn btn-info">
-                <i class="bi bi-search"></i>
-                Search
-              </button>
-            </div>
-          </form>
-          <ng-template #errorTemplate>
-            <ng-container *ngIf="errorMessage ; else loading">
-              <div class="text-danger">{{errorMessage}}</div>
-            </ng-container>
-            <ng-template #loading>
-              Loading ...
-            </ng-template>
-          </ng-template>
-          <ng-container *ngIf="accountObservable | async as accountDetails">
-            <div class="mb-2">
-              <label>Account ID :</label>
-              <label><strong>{{accountDetails.accountId}}</strong></label>
-            </div>
-            <div class="mb-2">
-              <label>Balance :</label>
-              <label><strong>{{accountDetails.balance | number : '1.2-2'}}</strong></label>
-            </div>
-            <table class="table">
-              <thead>
-                <th>ID</th><th>Date</th><th>Type</th><th>Amount</th>
-              </thead>
-              <tbody>
-                <tr *ngFor="let op of accountDetails.accountOperationDTOS">
-                  <td>{{op.id}}</td>
-                  <td>{{op.operationDate | date : 'dd-MM-yyyy:HH-mm-ss'}}</td>
-                  <td>{{op.type}}</td>
-                  <td class="text-end">{{op.amount | number : '1.2-2'}}</td>
-                </tr>
-              </tbody>
-            </table>
-            <ul class="nav nav-pills">
-              <li *ngFor="let item of [].constructor(accountDetails.totalPages);let page=index">
-                <a [ngClass]="page==currentPage?'btn-info':'btn-outline-info'" (click)="gotoPage(page)" class="btn  ms-1 mt-1">{{page}}</a>
-              </li>
-            </ul>
+<div class="notification" *ngIf="notification" [ngClass]="notification.type">
+  <div class="notification-content">
+    <i class="bi" [ngClass]="notification.type === 'success' ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+    <span>{{notification.message}}</span>
+  </div>
+  <button class="notification-close" (click)="clearNotification()">
+    <i class="bi bi-x"></i>
+  </button>
+</div>
+
+<div class="page-container">
+  <div class="search-container">
+    <div class="title-section">
+      <div class="icon-box">
+        <i class="bi bi-bank"></i>
+      </div>
+      <h2>Accounts Management</h2>
+    </div>
+    <div class="search-section">
+      <form [formGroup]="accountFormGroup" (ngSubmit)="handleSearchAccount()">
+        <div class="search-box">
+          <i class="bi bi-search search-icon"></i>
+          <input type="text" 
+                 formControlName="accountId" 
+                 class="form-control" 
+                 placeholder="Enter account ID to search..."
+                 [readonly]="!isInitialState"
+          >
+          <ng-container *ngIf="isInitialState; else resetButton">
+            <button class="btn btn-primary search-btn">
+              Search Account
+            </button>
           </ng-container>
+          <ng-template #resetButton>
+            <button type="button" class="btn btn-outline-primary reset-btn" (click)="resetSearch()">
+              <i class="bi bi-arrow-counterclockwise"></i>
+              New Search
+            </button>
+          </ng-template>
+        </div>
+      </form>
+    </div>
+
+    <div class="loading-state" *ngIf="isLoading">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p>Loading Account Details...</p>
+    </div>
+
+    <div class="empty-state" *ngIf="isInitialState && !isLoading">
+      <div class="empty-state-content">
+        <div class="empty-state-icons">
+          <i class="bi bi-bank2"></i>
+          <i class="bi bi-arrow-right"></i>
+          <i class="bi bi-file-earmark-text"></i>
+        </div>
+        <h3>Account Information Center</h3>
+        <p>Enter an account ID to view:</p>
+        <ul class="feature-list">
+          <li><i class="bi bi-cash-coin"></i> Account Balance</li>
+          <li><i class="bi bi-clock-history"></i> Transaction History</li>
+        </ul>
+      </div>
+    </div>
+
+    <ng-template #errorTemplate>
+      <ng-container *ngIf="errorMessage ; else loading">
+        <div class="text-danger">{{errorMessage}}</div>
+      </ng-container>
+      <ng-template #loading>
+        Loading ...
+      </ng-template>
+    </ng-template>
+
+    <div class="not-found-state" *ngIf="errorMessage && !isInitialState">
+      <div class="not-found-content">
+        <div class="not-found-icon">
+          <i class="bi bi-search"></i>
+        </div>
+        <h3>No Account Found</h3>
+        <p>We couldn't find an account with the ID you provided.</p>
+        <button class="btn btn-outline-primary" (click)="resetSearch()">
+          <i class="bi bi-arrow-counterclockwise"></i>
+          Try Another Search
+        </button>
+      </div>
+    </div>
+
+    <div class="account-details" *ngIf="!isInitialState && !isLoading && (accountDetails$ | async) as accountDetails">
+      <div class="account-info">
+        <div class="info-card">
+          <div class="info-item">
+            <i class="bi bi-person-badge"></i>
+            <div class="info-content single-line">
+              <span class="label">Account ID:</span>
+              <span class="value" [title]="accountDetails.accountId" (click)="copyToClipboard(accountDetails.accountId)">
+                {{accountDetails.accountId}}
+                <i class="bi bi-info-circle-fill tooltip-icon" title="Click to copy"></i>
+              </span>
+            </div>
+          </div>
+          <div class="info-item">
+            <i class="bi bi-wallet2"></i>
+            <div class="info-content single-line">
+              <span class="label">Balance:</span>
+              <span class="value">{{accountDetails.balance | number : '1.2-2'}} DH</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="transactions-section" *ngIf="accountDetails$ | async as accountDetails">
+        <div class="section-header">
+          <div class="header-icon">
+            <i class="bi bi-clock-history"></i>
+          </div>
+          <h3>Transaction History</h3>
+          <div class="transaction-count">
+            <span class="count-badge">
+              <i class="bi bi-list-check"></i>
+              {{accountDetails.accountOperationDTOS.length}} Transactions
+            </span>
+          </div>
+        </div>
+
+        <div class="search-filter-container">
+          <div class="search-box">
+            <i class="bi bi-search"></i>
+            <input type="text" placeholder="Search transactions..." [(ngModel)]="searchTerm" name="searchTerm" class="search-input">
+          </div>
+          
+          <div class="filter-buttons">
+            <button class="filter-btn" [class.active]="selectedFilter === 'all'" (click)="filterOperations('all')">
+              <i class="bi bi-grid"></i>
+              All
+            </button>
+            <button class="filter-btn" [class.active]="selectedFilter === 'debit'" (click)="filterOperations('debit')">
+              <i class="bi bi-arrow-down-circle"></i>
+              Debit
+            </button>
+            <button class="filter-btn" [class.active]="selectedFilter === 'credit'" (click)="filterOperations('credit')">
+              <i class="bi bi-arrow-up-circle"></i>
+              Credit
+            </button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>
+                  <div class="th-content">
+                    <i class="bi bi-hash"></i>
+                    <span>Transaction ID</span>
+                  </div>
+                </th>
+                <th>
+                  <div class="th-content">
+                    <i class="bi bi-calendar-event"></i>
+                    <span>Date & Time</span>
+                  </div>
+                </th>
+                <th>
+                  <div class="th-content">
+                    <i class="bi bi-tag"></i>
+                    <span>Type</span>
+                  </div>
+                </th>
+                <th class="text-end">
+                  <div class="th-content">
+                    <i class="bi bi-currency-dollar"></i>
+                    <span>Amount</span>
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="!isInitialState && filteredOperations.length === 0">
+                <td colspan="4">
+                  <div class="search-filter-empty-state">
+                    <div class="empty-state-icon">
+                      <i class="bi" [ngClass]="{
+                        'bi-search': searchTerm,
+                        'bi-filter': !searchTerm && selectedFilter !== 'all'
+                      }"></i>
+                    </div>
+                    <h4 class="empty-state-title">
+                      {{searchTerm ? 'No matching transactions found' : 
+                        selectedFilter !== 'all' ? 'No ' + selectedFilter + ' transactions found' : 
+                        'No transactions available'}}
+                    </h4>
+                    <p class="empty-state-text">
+                      {{searchTerm ? 'Try adjusting your search term or clear filters to see more results' :
+                        selectedFilter !== 'all' ? 'Try selecting a different filter' :
+                        'There are no transactions to display at this time'}}
+                    </p>
+                    <button *ngIf="searchTerm || selectedFilter !== 'all'" 
+                            class="btn btn-outline-primary" 
+                            (click)="clearFilters()">
+                      <i class="bi bi-arrow-counterclockwise"></i>
+                      Clear Filters
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr *ngFor="let op of filteredOperations">
+                <td><span class="operation-id">#{{op.id}}</span></td>
+                <td>
+                  <div class="date-badge">
+                    <i class="bi bi-calendar3"></i>
+                    <div class="date-content">
+                      <span class="date">{{op.operationDate | date : 'MMM dd, yyyy'}}</span>
+                      <span class="time">{{op.operationDate | date : 'HH:mm'}}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="operation-type" [ngClass]="op.type.toLowerCase()">
+                    {{op.type}}
+                  </span>
+                </td>
+                <td class="text-end">
+                  <span class="amount-badge" [ngClass]="{'credit': op.type === 'CREDIT', 'debit': op.type === 'DEBIT'}">
+                    <i class="bi" [ngClass]="{'bi-arrow-down-circle-fill': op.type === 'CREDIT', 'bi-arrow-up-circle-fill': op.type === 'DEBIT'}"></i>
+                    <span class="amount-text">{{op.type === 'CREDIT' ? '+' : '-'}}{{op.amount | number : '1.2-2'}} DH</span>
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination-container">
+          <nav class="nav-pills">
+            <button class="btn" [disabled]="currentPage === 0" (click)="gotoPage(currentPage-1)">
+              <i class="bi bi-chevron-left"></i>
+            </button>
+            <button class="btn" *ngFor="let page of [].constructor(accountDetails.totalPages); let i=index" 
+                    [class.active]="i === currentPage"
+                    (click)="gotoPage(i)">
+              {{i + 1}}
+            </button>
+            <button class="btn" [disabled]="currentPage === accountDetails.totalPages-1" (click)="gotoPage(currentPage+1)">
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </nav>
         </div>
       </div>
     </div>
-    <div class="col col-md-6">
-      <div class="card" *ngIf="accountObservable">
-        <div class="card-header">Operations</div>
-        <div class="card-body">
 
-          <form [formGroup]="operationFromGroup" (ngSubmit)="handleAccountOperation()" method="post">
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" formControlName="operationType" value="DEBIT">
-              <label class="form-check-label">DEBIT:</label>
-            </div>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" formControlName="operationType" value="CREDIT">
-              <label class="form-check-label">CREDIT:</label>
-            </div>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" formControlName="operationType" value="TRANSFER">
-              <label class="form-check-label">TRANSFER:</label>
-            </div>
-            <div class="mb-3" *ngIf="operationFromGroup.value.operationType=='TRANSFER'">
-              <label class="form-label">Account Destination :</label>
-              <input type="text" formControlName="accountDestination" class="form-control">
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Amount :</label>
-              <input type="text" formControlName="amount" class="form-control">
-            </div>
-            <div class="mb-3">
-              <label class="form-label">Description :</label>
-              <input type="text" formControlName="description" class="form-control">
-            </div>
-            <div class="d-grid mb-3">
-              <button class="btn btn-success">Save Operation</button>
-            </div>
-          </form>
+    <div class="operations-section" *ngIf="accountDetails$ | async as accountDetails">
+      <div class="section-header">
+        <div class="header-icon">
+          <i class="bi bi-check-circle"></i>
         </div>
+        <h3>Account Operations</h3>
       </div>
+      
+      <form [formGroup]="operationFromGroup" (ngSubmit)="handleAccountOperation()" class="operation-form">
+        <div class="mb-3">
+          <label class="form-label">Operation Type:</label>
+          <div class="operation-type-grid">
+            <div class="operation-choice" 
+                 [class.active]="operationFromGroup.get('operationType')?.value === 'CREDIT'"
+                 [class.CREDIT]="operationFromGroup.get('operationType')?.value === 'CREDIT'"
+                 (click)="selectOperationType('CREDIT')">
+              <div class="icon-wrapper credit">
+                <i class="bi bi-arrow-up-circle-fill"></i>
+              </div>
+              <span>Credit</span>
+              <p class="description">Add funds to account</p>
+            </div>
+            <div class="operation-choice"
+                 [class.active]="operationFromGroup.get('operationType')?.value === 'DEBIT'"
+                 [class.DEBIT]="operationFromGroup.get('operationType')?.value === 'DEBIT'"
+                 (click)="selectOperationType('DEBIT')">
+              <div class="icon-wrapper debit">
+                <i class="bi bi-arrow-down-circle-fill"></i>
+              </div>
+              <span>Debit</span>
+              <p class="description">Withdraw from account</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Amount</label>
+          <div class="amount-input">
+            <i class="bi bi-currency-dollar"></i>
+            <input type="number" formControlName="amount" class="form-control" placeholder="Enter amount">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <div class="description-input">
+            <i class="bi bi-chat-left-text"></i>
+            <input type="text" formControlName="description" class="form-control" placeholder="Enter description">
+          </div>
+        </div>
+        
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary" [disabled]="!operationFromGroup.valid">
+            <i class="bi bi-check-circle"></i>
+            Submit Operation
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>

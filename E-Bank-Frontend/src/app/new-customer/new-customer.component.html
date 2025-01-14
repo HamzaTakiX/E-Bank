@@ -1,39 +1,87 @@
-<div class="container">
-  <div class="card col-md-6 offset-3 mt-2">
-    <div class="card-header">New Customer</div>
+<div class="container mt-8">
+  <div class="card">
+    <div class="card-header">
+      <div class="header-content">
+        <div class="title-section">
+          <div class="icon-box">
+            <i class="bi bi-person-plus"></i>
+          </div>
+          <h2>New Customer</h2>
+        </div>
+      </div>
+    </div>
     <div class="card-body">
-      <form [formGroup]="newCustomerFormGroup" (ngSubmit)="handleSaveCustomer()">
-        <div class="mb-3">
-          <label class="form-label">Name:</label>
-          <input type="text" formControlName="name" class="form-control">
-          <span class="text-danger"
-                *ngIf="newCustomerFormGroup.controls['name'].touched
-                && newCustomerFormGroup.controls['name'].errors
-                && newCustomerFormGroup.controls['name'].errors!['required']">
-            Name is Required
-          </span>
+      <div *ngIf="showSuccessMessage" class="success-message">
+        <i class="bi bi-check-circle"></i>
+        <span>{{successMessage}}</span>
+      </div>
+      
+      <form [formGroup]="newCustomerFormGroup" (ngSubmit)="handleSaveCustomer()" autocomplete="off">
+        <div class="form-group">
+          <div class="input-container">
+            <i class="bi bi-person input-icon"></i>
+            <input type="text" 
+                   formControlName="name" 
+                   class="form-control custom-input" 
+                   placeholder="Enter customer name"
+                   [class.is-invalid]="newCustomerFormGroup.controls['name'].touched && newCustomerFormGroup.controls['name'].errors">
+          </div>
+          <div class="error-message" 
+               *ngIf="newCustomerFormGroup.controls['name'].touched && newCustomerFormGroup.controls['name'].errors?.['required']">
+            <i class="bi bi-exclamation-circle"></i>
+            Please enter a name
+          </div>
         </div>
-        <div class="mb-3">
-          <label class="form-label">Email:</label>
-          <input type="text" formControlName="email" class="form-control">
-          <span class="text-danger"
-                *ngIf="newCustomerFormGroup.controls['email'].touched
-                && newCustomerFormGroup.controls['email'].errors
-                && newCustomerFormGroup.controls['email'].errors!['email']">
-            Email is not valid
-          </span>
+
+        <div class="form-group">
+          <div class="input-container">
+            <i class="bi bi-envelope input-icon"></i>
+            <input type="email" 
+                   formControlName="email" 
+                   class="form-control custom-input" 
+                   placeholder="Enter email address"
+                   [class.is-invalid]="newCustomerFormGroup.controls['email'].touched && newCustomerFormGroup.controls['email'].errors">
+          </div>
+          <div class="error-message" 
+               *ngIf="newCustomerFormGroup.controls['email'].touched && newCustomerFormGroup.controls['email'].errors?.['email']">
+            <i class="bi bi-exclamation-circle"></i>
+            Please enter a valid email address
+          </div>
         </div>
-        <div class="mb-3">
-          <label class="form-label">Password:</label>
-          <input type="text" formControlName="password" class="form-control">
-          <span class="text-danger"
-                *ngIf="newCustomerFormGroup.controls['password'].touched
-                && newCustomerFormGroup.controls['password'].errors
-                && newCustomerFormGroup.controls['password'].errors!['password']">
-            Password is not valid
-          </span>
+
+        <div class="form-group">
+          <div class="input-container">
+            <i class="bi bi-lock input-icon"></i>
+            <input type="password" 
+                   formControlName="password" 
+                   class="form-control custom-input" 
+                   placeholder="Enter password (minimum 8 characters)"
+                   [class.is-invalid]="newCustomerFormGroup.controls['password'].touched && newCustomerFormGroup.controls['password'].errors">
+          </div>
+          <div class="error-message" 
+               *ngIf="newCustomerFormGroup.controls['password'].touched && newCustomerFormGroup.controls['password'].errors?.['required']">
+            <i class="bi bi-exclamation-circle"></i>
+            Password is required
+          </div>
+          <div class="error-message" 
+               *ngIf="newCustomerFormGroup.controls['password'].touched && newCustomerFormGroup.controls['password'].errors?.['minlength']">
+            <i class="bi bi-exclamation-circle"></i>
+            Password must be at least 8 characters
+          </div>
         </div>
-        <button [disabled]="!newCustomerFormGroup.valid" class="btn btn-info">Save</button>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-outline-secondary" routerLink="/customers">
+            <i class="bi bi-arrow-left"></i>
+            Back
+          </button>
+          <button type="submit" 
+                  [disabled]="!newCustomerFormGroup.valid" 
+                  class="btn btn-primary">
+            <i class="bi bi-check2-circle"></i>
+            Save Customer
+          </button>
+        </div>
       </form>
     </div>
   </div>
