@@ -48,7 +48,7 @@ export class AccountsComponent implements OnInit {
 
   private loadAccountData(page: number = 0) {
     if (!this.accountId) return;
-    
+
     this.isLoading = true;
     this.accountService.getAccount(this.accountId, page, this.pageSize)
       .subscribe({
@@ -81,7 +81,7 @@ export class AccountsComponent implements OnInit {
     let operationType = this.operationFromGroup.value.operationType;
     let amount : number = this.operationFromGroup.value.amount;
     let description : string = this.operationFromGroup.value.description;
-    
+
     if(operationType == 'DEBIT') {
       this.accountService.debit(accountId, amount, description).subscribe({
         next : (data)=>{
@@ -145,27 +145,30 @@ export class AccountsComponent implements OnInit {
 
   get filteredOperations() {
     if (!this.accountDetailsSubject.value?.accountOperationDTOS) return [];
-    
+
     let operations = this.accountDetailsSubject.value.accountOperationDTOS;
-    
+
     // Apply search filter
     if (this.searchTerm) {
       const term = this.searchTerm.toLowerCase();
-      operations = operations.filter(op => 
+      operations = operations.filter(op =>
         op.description?.toLowerCase().includes(term) ||
         op.type?.toLowerCase().includes(term) ||
         op.id?.toString().includes(term) ||
         op.amount?.toString().includes(term)
       );
     }
-    
+
     // Apply type filter
     if (this.selectedFilter !== 'all') {
-      operations = operations.filter(op => 
+      operations = operations.filter(op =>
         op.type?.toLowerCase() === this.selectedFilter
       );
     }
-    
+
+    // Sort by operationDate in descending order
+    operations.sort((a, b) => new Date(b.operationDate).getTime() - new Date(a.operationDate).getTime());
+
     return operations;
   }
 

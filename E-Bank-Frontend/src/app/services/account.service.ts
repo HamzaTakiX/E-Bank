@@ -50,7 +50,7 @@ export class AccountService {
   getCustomerAccounts(customerId: string): Observable<Array<AccountDetails>> {
     return this.http.get<Array<AccountDetails>>(`${this.apiUrl}/accounts`)
       .pipe(
-        map((accounts: Array<AccountDetails>) => 
+        map((accounts: Array<AccountDetails>) =>
           accounts.filter((acc: AccountDetails) => acc.customerDTO?.id === Number(customerId))
         )
       );

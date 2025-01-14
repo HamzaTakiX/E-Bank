@@ -47,7 +47,7 @@ public class EBankBackendApplication {
                             BankAccountRepository bankAccountRepository,
                             AccountOperationRepository accountOperationRepository) {
         return args -> {
-            Stream.of("Hamza", "Ayoub", "Youssef", "Meryem", "Hajar", "Amine", "Nadia")
+            Stream.of("Hamza")
                     .forEach(name -> {
                         Customer customer = new Customer();
                         customer.setName(name);
@@ -82,6 +82,7 @@ public class EBankBackendApplication {
                     accountOperation.setOperationDate(generateRandomDate(2023, 2025));
                     accountOperation.setAmount(100 + Math.random() * 20000);
                     accountOperation.setType(Math.random() > 0.5 ? OperationType.DEBIT : OperationType.CREDIT);
+                    accountOperation.setDescription("Description"+i);
                     accountOperation.setBankAccount(acc);
                     accountOperationRepository.save(accountOperation);
                 });
