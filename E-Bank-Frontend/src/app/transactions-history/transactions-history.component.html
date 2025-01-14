@@ -1,73 +1,111 @@
 <div class="container-fluid py-4 bg-light min-vh-100">
-  <div class="mb-4">
-    <h1 class="display-6 fw-bold">Transactions History</h1>
-    <p class="text-muted">View all accounts transactions</p>
-    <div class="d-flex justify-content-end mb-3">
-      <button class="btn btn-outline-success me-2" (click)="exportToExcel()">
-        <i class="bi bi-file-earmark-excel"></i> Export to Excel
-      </button>
-      <button class="btn btn-outline-info me-2" (click)="exportToCsv()">
-        <i class="bi bi-file-earmark-arrow-down"></i> Export to CSV
-      </button>
-      <button class="btn btn-outline-danger" (click)="exportToPdf()">
-        <i class="bi bi-file-earmark-pdf"></i> Export to PDF
-      </button>
+  <div class="transactions-header">
+    <div class="header-content">
+      <div class="title-section">
+        <i class="bi bi-clock-history header-icon"></i>
+        <div>
+          <h1>Transactions History</h1>
+          <p>Track and manage your financial activities with ease</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="header-btn excel-btn" (click)="exportToExcel()">
+          <i class="bi bi-file-earmark-excel"></i>
+          <span>Excel</span>
+        </button>
+        <button class="header-btn csv-btn" (click)="exportToCsv()">
+          <i class="bi bi-file-earmark-arrow-down"></i>
+          <span>CSV</span>
+        </button>
+        <button class="header-btn pdf-btn" (click)="exportToPdf()">
+          <i class="bi bi-file-earmark-pdf"></i>
+          <span>PDF</span>
+        </button>
+      </div>
     </div>
   </div>
 
-  <div class="card mb-4 bg-light">
-    <div class="card-body">
-      <div class="row g-3">
-        <div class="col-md-9">
-          <div class="position-relative">
-            <input
-              type="text"
-              [(ngModel)]="searchTerm"
-              (input)="filterTransactions()"
-              placeholder="Search by account ID..."
-              class="form-control ps-5"
-            />
-            <i class="bi bi-search position-absolute start-3 top-50 translate-middle-y text-muted"></i>
-          </div>
+  <div class="filter-section">
+    <div class="filter-header">
+      <div class="filter-title">
+        <i class="bi bi-funnel-fill"></i>
+        <h2>Filter Transactions</h2>
+      </div>
+    </div>
+
+    <div class="search-box">
+      <div class="search-wrapper">
+        <i class="bi bi-search search-icon"></i>
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          (input)="filterTransactions()"
+          placeholder="Search transactions..."
+          class="search-input"
+        />
+        <button 
+          class="search-clear" 
+          *ngIf="searchTerm" 
+          (click)="searchTerm = ''; filterTransactions()"
+        >
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="filters-container">
+      <div class="filter-group">
+        <label for="transactionType" class="filter-label">
+          <i class="bi bi-arrow-left-right"></i>
+          Transaction Type
+        </label>
+        <div class="select-wrapper">
+          <select
+            id="transactionType"
+            [(ngModel)]="selectedType"
+            (change)="filterTransactions()"
+            class="filter-input select-input"
+          >
+            <option value="">All Types</option>
+            <option value="CREDIT">Credit</option>
+            <option value="DEBIT">Debit</option>
+          </select>
+          <i class="bi bi-chevron-down select-icon"></i>
         </div>
+      </div>
 
-        <div class="row g-3">
-          <!-- Existing Type Filter -->
-          <div class="col-md-3">
-            <select
-              [(ngModel)]="selectedType"
-              (change)="filterTransactions()"
-              class="form-select"
-            >
-              <option value="">All Types</option>
-              <option value="CREDIT">Credit</option>
-              <option value="DEBIT">Debit</option>
-            </select>
-          </div>
-
-          <!-- Date Filters -->
-          <div class="col-md-3">
-            <label for="fromDate" class="form-label">From Date</label>
-            <input
-              type="date"
-              id="fromDate"
-              [(ngModel)]="fromDate"
-              (change)="filterTransactions()"
-              class="form-control"
-            />
-          </div>
-          <div class="col-md-3">
-            <label for="toDate" class="form-label">To Date</label>
-            <input
-              type="date"
-              id="toDate"
-              [(ngModel)]="toDate"
-              (change)="filterTransactions()"
-              class="form-control"
-            />
-          </div>
+      <div class="filter-group">
+        <label for="fromDate" class="filter-label">
+          <i class="bi bi-calendar3"></i>
+          From Date
+        </label>
+        <div class="date-input-wrapper">
+          <input
+            type="date"
+            id="fromDate"
+            [(ngModel)]="fromDate"
+            (change)="filterTransactions()"
+            class="filter-input date-input"
+          />
+          <i class="bi bi-calendar-event date-icon"></i>
         </div>
+      </div>
 
+      <div class="filter-group">
+        <label for="toDate" class="filter-label">
+          <i class="bi bi-calendar3"></i>
+          To Date
+        </label>
+        <div class="date-input-wrapper">
+          <input
+            type="date"
+            id="toDate"
+            [(ngModel)]="toDate"
+            (change)="filterTransactions()"
+            class="filter-input date-input"
+          />
+          <i class="bi bi-calendar-event date-icon"></i>
+        </div>
       </div>
     </div>
   </div>
@@ -75,70 +113,219 @@
   <div class="card shadow">
     <div class="card-body p-0">
       <div class="table-responsive">
-        <table class="table table-hover mb-0">
-          <thead class="bg-light">
+        <div *ngIf="isLoading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <p class="mt-2">Loading transactions...</p>
+        </div>
+        
+        <table class="table table-hover mb-0" *ngIf="!isLoading && filteredTransactions.length > 0">
+          <thead>
             <tr>
-              <th class="text-uppercase small fw-semibold text-muted px-3">Amount</th>
-              <th class="text-uppercase small fw-semibold text-muted px-3">Operation ID</th>
-              <th class="text-uppercase small fw-semibold text-muted px-3">Account ID</th>
-              <th class="text-uppercase small fw-semibold text-muted px-3">Description</th>
-              <th class="text-uppercase small fw-semibold text-muted px-3">Operation Date</th>
-              <th class="text-uppercase small fw-semibold text-muted px-3">Type</th>
+              <th class="text-center">
+                <div class="d-flex align-items-center justify-content-center gap-2">
+                  <i class="bi bi-hash"></i>
+                  Operation ID
+                </div>
+              </th>
+              <th class="text-center">
+                <div class="d-flex align-items-center justify-content-center gap-2">
+                  <i class="bi bi-person-badge"></i>
+                  Account ID
+                </div>
+              </th>
+              <th class="text-center">
+                <div class="d-flex align-items-center justify-content-center gap-2">
+                  <i class="bi bi-people"></i>
+                  Customer
+                </div>
+              </th>
+              <th class="text-center">
+                <div class="d-flex align-items-center justify-content-center gap-2">
+                  <i class="bi bi-currency-dollar"></i>
+                  Amount
+                </div>
+              </th>
+              <th class="text-center">
+                <div class="d-flex align-items-center justify-content-center gap-2">
+                  <i class="bi bi-calendar2-date"></i>
+                  Date
+                </div>
+              </th>
+              <th class="text-center">
+                <div class="d-flex align-items-center justify-content-center gap-2">
+                  <i class="bi bi-arrow-left-right"></i>
+                  Type
+                </div>
+              </th>
             </tr>
           </thead>
           <tbody>
-            <tr
-              *ngFor="let transaction of filteredTransactions | paginate: { itemsPerPage: pageSize, currentPage: currentPage }"
-              class="fade-in"
-              [@fadeIn]
-            >
-              <td class="px-3 py-2 align-middle">
-                <span [class]="transaction.type === 'CREDIT' ? 'text-success' : 'text-danger'">
-                  {{transaction.type === 'CREDIT' ? '+' : '-'}}${{transaction.amount | number:'1.2-2'}}
+            <tr *ngFor="let transaction of filteredTransactions | paginate: { itemsPerPage: pageSize, currentPage: currentPage }" 
+                class="align-middle transaction-row"
+                (click)="openTransactionDetails(transaction, $event)">
+              <td class="text-center">
+                <span class="fw-medium">#{{transaction.id}}</span>
+              </td>
+              <td class="text-center">
+                <span class="badge bg-primary-subtle text-primary account-badge" 
+                      (click)="copyToClipboard(transaction.bank_account_id, transaction.id); $event.stopPropagation()"
+                      (mouseenter)="hoveredRowId = getUniqueRowId(transaction)"
+                      (mouseleave)="hoveredRowId = null"
+                      [class.copied]="copiedId === transaction.bank_account_id && copiedTransactionId === transaction.id">
+                  <i class="bi bi-clipboard me-1"></i>
+                  {{truncateAccountId(transaction.bank_account_id)}}
+                  <span class="account-tooltip" *ngIf="hoveredRowId === getUniqueRowId(transaction)">
+                    {{transaction.bank_account_id}}
+                  </span>
+                  <span class="copy-tooltip" *ngIf="copiedId === transaction.bank_account_id && copiedTransactionId === transaction.id">Copied!</span>
                 </span>
               </td>
-              <td class="px-3 py-2 align-middle">{{transaction.id}}</td>
-              <td class="px-3 py-2 align-middle">
-                <p >{{transaction.customer.name}} - {{transaction.customer.email}}</p>
-                <span class="text-primary">{{transaction.bank_account_id}} <a routerLink="/customer-accounts/{{transaction.id}}" >View Account</a></span>
+              <td class="text-center">
+                <span class="badge bg-light customer-badge">
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="customer-avatar">
+                      {{transaction.customer.name.charAt(0)}}
+                    </div>
+                    <div class="d-flex flex-column align-items-start">
+                      <span class="customer-name">{{transaction.customer.name}}</span>
+                      <small class="customer-email">{{transaction.customer.email}}</small>
+                    </div>
+                  </div>
+                </span>
               </td>
-              <td class="px-3 py-2 align-middle">
-                {{transaction.description || 'No description'}}
+              <td class="text-center">
+                <span [class]="'badge ' + (transaction.type === 'CREDIT' ? 'bg-success-subtle text-success amount-badge' : 'bg-danger-subtle text-danger amount-badge')">
+                  {{transaction.type === 'CREDIT' ? '+' : '-'}}${{transaction.amount}}
+                </span>
               </td>
-              <td class="px-3 py-2 align-middle">{{transaction.operationDate | date:'medium'}}</td>
-              <td class="px-3 py-2 align-middle">
-                <span
-                  class="badge"
-                  [ngClass]="{
-                    'bg-success': transaction.type === 'CREDIT',
-                    'bg-danger': transaction.type === 'DEBIT'
-                  }"
-                >
+              <td class="text-center">
+                <span class="badge bg-secondary-subtle text-secondary date-badge">
+                  <i class="bi bi-calendar-event me-2"></i>
+                  {{transaction.operationDate | date:'MMM d, yyyy, h:mm a'}}
+                </span>
+              </td>
+              <td class="text-center">
+                <span class="badge" [class]="transaction.type === 'CREDIT' ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'">
                   {{transaction.type}}
                 </span>
               </td>
             </tr>
           </tbody>
         </table>
+        
+        <div *ngIf="!isLoading && filteredTransactions.length === 0" class="text-center py-5">
+          <i class="bi bi-search fs-1 text-muted"></i>
+          <p class="mt-3">No transactions found matching your criteria</p>
+        </div>
+      </div>
+
+      <!-- Pagination Section -->
+      <div class="pagination-section" *ngIf="!isLoading && filteredTransactions.length > 0">
+        <div class="d-flex justify-content-between align-items-center p-3">
+          <div class="pagination-info">
+            <label>Show
+              <select [(ngModel)]="pageSize" (change)="onPageSizeChange(pageSize)">
+                <option [value]="5">5</option>
+                <option [value]="10">10</option>
+                <option [value]="25">25</option>
+                <option [value]="50">50</option>
+              </select>
+              entries
+            </label>
+            <span class="mx-3">
+              Showing {{ (currentPage - 1) * pageSize + 1 }} to 
+              {{ currentPage * pageSize > filteredTransactions.length ? filteredTransactions.length : currentPage * pageSize }}
+              of {{ filteredTransactions.length }} entries
+            </span>
+          </div>
+          <pagination-controls
+            (pageChange)="currentPage = $event"
+            [previousLabel]="'Previous'"
+            [nextLabel]="'Next'"
+            [screenReaderPaginationLabel]="'Pagination'"
+            [screenReaderPageLabel]="'page'"
+            [screenReaderCurrentLabel]="'You are on page'"
+          >
+          </pagination-controls>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="d-flex justify-content-between align-items-center mt-3">
-    <div>
-      <label>Show
-        <select [(ngModel)]="pageSize" (change)="onPageSizeChange(pageSize)">
-          <option [value]="5">5</option>
-          <option [value]="10" selected>10</option>
-          <option [value]="25">25</option>
-          <option [value]="50">50</option>
-        </select>
-        entries
-      </label>
+  <!-- Transaction Details Modal -->
+  <div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2 class="modal-title">
+          Transaction Details
+          <span [class]="'badge ms-2 ' + (selectedTransaction?.type === 'CREDIT' ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger')">
+            {{selectedTransaction?.type}}
+          </span>
+        </h2>
+        <button class="close-button" (click)="closeModal()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body" *ngIf="selectedTransaction">
+        <div class="detail-section">
+          <div class="detail-group">
+            <label>Customer Information</label>
+            <div class="customer-info">
+              <div class="customer-avatar modal-avatar">
+                {{selectedTransaction.customer.name.charAt(0)}}
+              </div>
+              <div class="customer-details">
+                <p class="customer-name">{{selectedTransaction.customer.name}}</p>
+                <p class="customer-email">{{selectedTransaction.customer.email}}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-group">
+            <label>Operation ID</label>
+            <p class="detail-value">#{{selectedTransaction.id}}</p>
+          </div>
+          
+          <div class="detail-group">
+            <label>Account ID</label>
+            <p class="detail-value">
+              <span class="badge bg-primary-subtle text-primary">
+                {{selectedTransaction.bank_account_id}}
+              </span>
+            </p>
+          </div>
+
+          <div class="detail-group">
+            <label>Amount</label>
+            <p class="detail-value">
+              <span [class]="'badge ' + (selectedTransaction.type === 'CREDIT' ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger')">
+                {{selectedTransaction.type === 'CREDIT' ? '+' : '-'}}${{selectedTransaction.amount}}
+              </span>
+            </p>
+          </div>
+
+          <div class="detail-group">
+            <label>Date & Time</label>
+            <p class="detail-value">
+              <span class="badge bg-secondary-subtle text-secondary">
+                <i class="bi bi-calendar-event me-2"></i>
+                {{selectedTransaction.operationDate | date:'MMM d, yyyy, h:mm a'}}
+              </span>
+            </p>
+          </div>
+
+          <div class="detail-group">
+            <label>Description</label>
+            <p class="detail-value description-text">
+              {{selectedTransaction.description || 'No description available'}}
+            </p>
+          </div>
+        </div>
+      </div>
     </div>
-    <pagination-controls
-      (pageChange)="onPageChange($event)"
-      class="d-flex justify-content-center"
-    ></pagination-controls>
   </div>
+
 </div>

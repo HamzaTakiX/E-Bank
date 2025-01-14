@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {DashboardService} from "../services/dashboard.service";
+import { Router } from '@angular/router';
 import {
   Chart,
   LineController,
@@ -19,22 +20,38 @@ import {
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  dashboardData: any;
+  dashboardData: any = {};
+  searchTerm: string = '';
+  filteredAccounts: any[] = [];
   dashboardChartsInfo: any;
   transactionChart: any;
   bankAccountChart: any;
+  showFilters: boolean = false;
+  accountTypes: string[] = ['SavingAccount', 'CurrentAccount'];
+  accountStatuses: string[] = ['ACTIVATED', 'SUSPENDED', 'CREATED'];
+  balanceRanges = [
+    { label: '< $1000', value: 'low' },
+    { label: '$1000 - $5000', value: 'medium' },
+    { label: '> $5000', value: 'high' }
+  ];
+  selectedFilters = {
+    type: '',
+    status: '',
+    balanceRange: ''
+  };
 
-  constructor(private dashboardService: DashboardService) { }
+  constructor(private dashboardService: DashboardService, private router: Router) { }
 
   ngOnInit(): void {
-    this.getDashboardInfo();
+    this.loadDashboardData();
     this.getDashboardChartsInfo();
   }
 
-  getDashboardInfo(): void {
+  loadDashboardData() {
     this.dashboardService.getDashboardInfo().subscribe({
       next: (data) => {
         this.dashboardData = this.formatDashboardData(data);
+        this.filteredAccounts = this.dashboardData.latestBankAccounts;
         console.log("Dashboard Data: ", this.dashboardData);
       },
       error: (err) => {
@@ -70,6 +87,28 @@ export class DashboardComponent implements OnInit {
     }
 
     return formattedData;
+  }
+
+  onSearch(): void {
+    if (!this.searchTerm) {
+      this.filteredAccounts = this.dashboardData.latestBankAccounts;
+      return;
+    }
+
+    const searchTermLower = this.searchTerm.toLowerCase();
+    this.filteredAccounts = this.dashboardData.latestBankAccounts.filter((account: any) => {
+      return (
+        account.customerDTO.name.toLowerCase().includes(searchTermLower) ||
+        account.type.toLowerCase().includes(searchTermLower) ||
+        account.status.toLowerCase().includes(searchTermLower) ||
+        account.balance.toString().includes(searchTermLower)
+      );
+    });
+  }
+
+  clearSearch(): void {
+    this.searchTerm = '';
+    this.filteredAccounts = this.dashboardData.latestBankAccounts;
   }
 
   getDashboardChartsInfo(): void {
@@ -164,6 +203,87 @@ export class DashboardComponent implements OnInit {
           }
         }
       }
+    });
+  }
+
+  toggleFilters(): void {
+    this.showFilters = !this.showFilters;
+  }
+
+  filterByType(type: string): void {
+    this.selectedFilters.type = this.selectedFilters.type === type ? '' : type;
+    this.applyFilters();
+  }
+
+  filterByStatus(status: string): void {
+    this.selectedFilters.status = this.selectedFilters.status === status ? '' : status;
+    this.applyFilters();
+  }
+
+  filterByBalance(range: string): void {
+    this.selectedFilters.balanceRange = this.selectedFilters.balanceRange === range ? '' : range;
+    this.applyFilters();
+  }
+
+  clearFilters(): void {
+    this.selectedFilters = {
+      type: '',
+      status: '',
+      balanceRange: ''
+    };
+    this.applyFilters();
+  }
+
+  applyFilters(): void {
+    let filtered = this.dashboardData.latestBankAccounts;
+
+    if (this.selectedFilters.type) {
+      filtered = filtered.filter((account: any) => 
+        account.type === this.selectedFilters.type
+      );
+    }
+
+    if (this.selectedFilters.status) {
+      filtered = filtered.filter((account: any) => 
+        account.status === this.selectedFilters.status
+      );
+    }
+
+    if (this.selectedFilters.balanceRange) {
+      filtered = filtered.filter((account: any) => {
+        const balance = account.balance;
+        switch (this.selectedFilters.balanceRange) {
+          case 'low':
+            return balance < 1000;
+          case 'medium':
+            return balance >= 1000 && balance <= 5000;
+          case 'high':
+            return balance > 5000;
+          default:
+            return true;
+        }
+      });
+    }
+
+    if (this.searchTerm) {
+      const searchTermLower = this.searchTerm.toLowerCase();
+      filtered = filtered.filter((account: any) => {
+        return (
+          account.customerDTO.name.toLowerCase().includes(searchTermLower) ||
+          account.type.toLowerCase().includes(searchTermLower) ||
+          account.status.toLowerCase().includes(searchTermLower) ||
+          account.balance.toString().includes(searchTermLower)
+        );
+      });
+    }
+
+    this.filteredAccounts = filtered;
+  }
+
+  viewAccountDetails(accountId: string) {
+    this.router.navigate(['/accounts'], { 
+      queryParams: { id: accountId },
+      fragment: 'top'
     });
   }
 }

@@ -11,11 +11,14 @@ import {Router} from "@angular/router";
 })
 export class NewCustomerComponent implements OnInit {
   newCustomerFormGroup! : FormGroup;
+  successMessage: string = '';
+  showSuccessMessage: boolean = false;
+
   constructor(private fb : FormBuilder, private customerService:CustomerService, private router:Router) { }
 
   ngOnInit(): void {
     this.newCustomerFormGroup=this.fb.group({
-      name : this.fb.control(null, [Validators.required, Validators.minLength(4)]),
+      name : this.fb.control(null, [Validators.required]),
       email : this.fb.control(null,[Validators.required, Validators.email]),
       password : this.fb.control(null,[Validators.required, Validators.minLength(8)])
     });
@@ -24,10 +27,12 @@ export class NewCustomerComponent implements OnInit {
   handleSaveCustomer() {
     let customer:Customer=this.newCustomerFormGroup.value;
     this.customerService.saveCustomer(customer).subscribe({
-      next : data=>{
-        alert("Customer has been successfully saved!");
-        //this.newCustomerFormGroup.reset();
-        this.router.navigateByUrl("/admin/customers");
+      next : data => {
+        this.showSuccessMessage = true;
+        this.successMessage = "Customer has been successfully saved!";
+        setTimeout(() => {
+          this.router.navigateByUrl("/admin/customers");
+        }, 1500);
       },
       error : err => {
         console.log(err);

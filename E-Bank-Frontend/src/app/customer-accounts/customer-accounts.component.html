@@ -1,4 +1,222 @@
-<div class="container">
-  <div>{{customerId}}</div>
-  <div>{{customer | json}}</div>
+<div class="container mt-4">
+  <div class="customer-info card mb-4" *ngIf="customer">
+    <div class="card-body">
+      <div class="customer-profile">
+        <div class="profile-header">
+          <div class="profile-avatar">
+            <i class="bi bi-person-circle"></i>
+          </div>
+          <div class="profile-title">
+            <h2>Customer Details</h2>
+            <span class="customer-id">ID: {{customer.id}}</span>
+          </div>
+        </div>
+        
+        <div class="profile-details">
+          <div class="detail-item">
+            <div class="detail-icon">
+              <i class="bi bi-person-fill"></i>
+            </div>
+            <div class="detail-content">
+              <label>Name</label>
+              <span>{{customer.name}}</span>
+            </div>
+          </div>
+          
+          <div class="detail-item">
+            <div class="detail-icon">
+              <i class="bi bi-envelope-fill"></i>
+            </div>
+            <div class="detail-content">
+              <label>Email</label>
+              <span>{{customer.email}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="accounts-section">
+    <div class="section-header">
+      <h3>
+        <i class="bi bi-wallet2"></i>
+        <span>Accounts Overview</span>
+      </h3>
+      <div class="accounts-count" *ngIf="accounts$ | async as accounts">
+        {{accounts.length}} Account(s)
+      </div>
+    </div>
+
+    <div class="alert alert-danger" *ngIf="errorMessage">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>{{errorMessage}}
+    </div>
+    
+    <div class="accounts-grid" *ngIf="accounts$ | async as accounts">
+      <div class="account-wrapper" *ngFor="let account of accounts">
+        <div class="account-card" (click)="handleOperationAccount(account)">
+          <div class="card-top-status" [ngClass]="{'active': account.status === 'ACTIVATED'}">
+            <span class="status-indicator"></span>
+            {{account.status}}
+          </div>
+          
+          <div class="account-main">
+            <div class="account-type-badge" [ngClass]="account.type.toLowerCase()">
+              <i class="bi" [ngClass]="{
+                'bi-piggy-bank-fill': account.type === 'SavingAccount',
+                'bi-credit-card-fill': account.type === 'CurrentAccount'
+              }"></i>
+              <span>{{getAccountTypeLabel(account.type)}}</span>
+            </div>
+            
+            <div class="account-balance">
+              <div class="balance-label">Available Balance</div>
+              <div class="balance-amount">
+                <span class="currency-symbol">MAD</span>
+                <span class="amount">{{account.balance | number:'1.2-2'}}</span>
+              </div>
+            </div>
+
+            <div class="account-details">
+              <div class="detail-row">
+                <span class="label">Account ID</span>
+                <span class="badge badge-id" [title]="account.id">
+                  <i class="bi bi-hash"></i>
+                  {{account.id}}
+                </span>
+              </div>
+              <div class="detail-row">
+                <span class="label">Created</span>
+                <span class="badge badge-date">
+                  <i class="bi bi-calendar3"></i>
+                  {{account.createdAt | date:'mediumDate'}}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <button class="view-details">
+              <i class="bi bi-arrow-right"></i>
+              <span>View Details</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="no-accounts text-center" *ngIf="(accounts$ | async)?.length === 0">
+      <div class="empty-state">
+        <i class="bi bi-wallet2"></i>
+        <h4>No Accounts Found</h4>
+        <p>This customer doesn't have any accounts yet.</p>
+      </div>
+    </div>
+  </div>
 </div>
+<!-- Operations Modal -->
+<div class="modal-backdrop" *ngIf="showOperationsModal" (click)="closeModal()"></div>
+<div class="operations-modal" *ngIf="showOperationsModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="header-content">
+        <div class="modal-title">
+          <h3>
+            <i class="bi" [ngClass]="{
+              'bi-piggy-bank-fill': selectedAccount?.type === 'SavingAccount',
+              'bi-credit-card-fill': selectedAccount?.type === 'CurrentAccount'
+            }"></i>
+            Account Operations
+          </h3>
+          <div class="account-badges">
+            <span class="badge badge-id" [title]="selectedAccount?.id">
+              <i class="bi bi-hash"></i>
+              {{selectedAccount?.id}}
+            </span>
+            <span class="badge badge-balance">
+              <i class="bi bi-wallet2"></i>
+              {{selectedAccount?.balance | number:'1.2-2'}} MAD
+            </span>
+          </div>
+        </div>
+      </div>
+      <button class="close-button" (click)="closeModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <!-- Loading State -->
+      <div class="loading-state" *ngIf="isLoadingOperations">
+        <div class="spinner"></div>
+        <p>Loading operations...</p>
+      </div>
+
+      <!-- Error State -->
+      <div class="error-state" *ngIf="operationsError">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <p>{{operationsError}}</p>
+      </div>
+
+      <div class="modal-balance" *ngIf="!isLoadingOperations && !operationsError">
+        <span class="balance-label">Current Balance</span>
+        <div class="balance-badge">
+          <i class="bi bi-wallet2"></i>
+          {{selectedAccount?.balance | number:'1.2-2'}} MAD
+        </div>
+      </div>
+
+      <!-- Operations List -->
+      <div class="operations-list" *ngIf="!isLoadingOperations && !operationsError">
+        <div class="operation-item" *ngFor="let op of operations">
+          <div class="operation-icon" [ngClass]="getOperationClass(op.type)">
+            <i class="bi" [ngClass]="getOperationIcon(op.type)"></i>
+          </div>
+          <div class="operation-details">
+            <div class="operation-main">
+              <span class="operation-type">{{op.description}}</span>
+              <span class="operation-amount" [ngClass]="getOperationClass(op.type)">
+                {{op.type === 'CREDIT' ? '+' : '-'}}{{op.amount | number:'1.2-2'}} MAD
+              </span>
+            </div>
+            <div class="operation-meta">
+              <span class="operation-date">
+                <i class="bi bi-calendar3"></i>
+                {{op.operationDate | date:'medium'}}
+              </span>
+              <span class="operation-id">
+                <i class="bi bi-hash"></i>
+                #{{op.id}}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-operations" *ngIf="operations.length === 0">
+          <i class="bi bi-inbox"></i>
+          <p>No operations found for this account</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="close-modal" (click)="closeModal()">
+        <i class="bi bi-x-circle"></i>
+        Close
+      </button>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoadingCustomer">
+    <div class="spinner"></div>
+    <p>Loading customer information...</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="error-state" *ngIf="errorMessage">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    <p>{{errorMessage}}</p>
+  </div>

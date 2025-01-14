@@ -1,43 +1,154 @@
-<div class="container mt-2">
-  <ng-container *ngIf="customers | async as listCustomers; else failureOrLading">
+<div class="container mt-8">
+  <ng-container *ngIf="!isLoading; else failureOrLading">
     <div class="card">
-      <div class="card-header d-flex  justify-content-between"><p>Customers</p>  <a *ngIf="authService.roles.includes('ADMIN')" routerLink="/admin/new-customer" class="btn btn-success">ADD Customers</a></div>
-      <div class="card-body">
-        <div *ngIf="searchFormGroup">
-          <form [formGroup]="searchFormGroup" (ngSubmit)="handleSearchCustomers()">
-            <div class="input-group">
-              <label class="input-group-text">Keyword :</label>
-              <input type="text" formControlName="keyword" class="form-control">
-              <button class="btn btn-info">
-                <i class="bi bi-search"></i>
-              </button>
-            </div>
-          </form>
+      <div class="card-header">
+        <div class="header-content">
+          <div class="title-section">
+            <i class="bi bi-people-fill"></i>
+            <h2>Customers</h2>
+          </div>
+          <div class="header-actions">
+            <button class="header-btn excel-btn" (click)="exportToExcel()">
+              <i class="bi bi-file-earmark-excel"></i>
+              <span>Excel</span>
+            </button>
+            <button class="header-btn csv-btn" (click)="exportToCsv()">
+              <i class="bi bi-file-earmark-arrow-down"></i>
+              <span>CSV</span>
+            </button>
+            <button class="header-btn pdf-btn" (click)="exportToPdf()">
+              <i class="bi bi-file-earmark-pdf"></i>
+              <span>PDF</span>
+            </button>
+          </div>
+          <div class="search-container">
+            <form [formGroup]="searchFormGroup" (ngSubmit)="handleSearchCustomers()">
+              <div class="search-box">
+                <i class="bi bi-search search-icon"></i>
+                <input
+                  type="text"
+                  class="search-input"
+                  formControlName="keyword"
+                  placeholder="Search customers..."
+                >
+                <button class="search-button" type="submit">
+                  <i class="bi bi-search"></i>
+                  Search
+                </button>
+              </div>
+            </form>
+          </div>
+          <a routerLink="/new-customer" class="btn btn-success add-customer-btn">
+            <i class="bi bi-plus-circle-fill"></i>
+            <span>Add Customer</span>
+          </a>
         </div>
-        <table class="table">
-          <thead>
-          <tr>
-            <th>ID</th><th>Name</th><th>Email</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr *ngFor="let c of customers | async">
-            <td>{{c.id}}</td>
-            <td>{{c.name}}</td>
-            <td>{{c.email}}</td>
-            <td>
-              <button (click)="handleDeleteCustomer(c)" class="btn btn-danger">
-                <i class="bi bi-trash"></i>
-              </button>
-            </td>
-            <td>
-              <button (click)="handleCustomerAccounts(c)" class="btn btn-success">
-                Accounts
-              </button>
-            </td>
-          </tr>
-          </tbody>
-        </table>
+      </div>
+      <div class="card-body">
+        <ng-container *ngIf="!isLoading; else loading">
+          <div *ngIf="showSuccessMessage" class="success-message">
+            <i class="bi bi-check-circle"></i>
+            <span>{{successMessage}}</span>
+          </div>
+
+          <ng-container *ngIf="(customers$ | async)?.length; else noResults">
+            <table class="table">
+              <thead>
+              <tr>
+                <th class="text-center">
+                  <div class="column-header">
+                    <i class="bi bi-hash"></i>
+                    <span>ID</span>
+                  </div>
+                </th>
+                <th class="text-center">
+                  <div class="column-header">
+                    <i class="bi bi-person"></i>
+                    <span>Name</span>
+                  </div>
+                </th>
+                <th class="text-center">
+                  <div class="column-header">
+                    <i class="bi bi-envelope"></i>
+                    <span>Email</span>
+                  </div>
+                </th>
+                <th class="text-center">
+                  <div class="column-header">
+                    <i class="bi bi-gear"></i>
+                    <span>Actions</span>
+                  </div>
+                </th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let c of customers$ | async">
+                <td class="text-center">
+                  <span class="id-badge">
+                    <i class="bi bi-hash"></i>
+                    {{c.id}}
+                  </span>
+                </td>
+                <td class="text-center">
+                  <span class="name-badge">
+                    <i class="bi bi-person-circle"></i>
+                    {{c.name}}
+                  </span>
+                </td>
+                <td class="text-center">
+                  <span class="email-badge">
+                    <i class="bi bi-envelope-fill"></i>
+                    {{c.email}}
+                  </span>
+                </td>
+                <td class="text-center action-column">
+                  <div class="action-buttons">
+                    <button (click)="handleCustomerAccounts(c)" class="btn action-btn view-btn" title="View Accounts">
+                      <div class="btn-content">
+                        <i class="bi bi-bank"></i>
+                        <span>Accounts</span>
+                      </div>
+                    </button>
+                    <button (click)="handleDeleteCustomer(c)" class="btn action-btn delete-btn" title="Delete Customer">
+                      <div class="btn-content">
+                        <i class="bi bi-trash3"></i>
+                        <span>Delete</span>
+                      </div>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              </tbody>
+            </table>
+          </ng-container>
+        </ng-container>
+
+        <ng-template #loading>
+          <div class="loading-container">
+            <div class="spinner-container">
+              <div class="spinner-ring"></div>
+              <div class="loading-text">Loading Customers...</div>
+            </div>
+          </div>
+        </ng-template>
+
+        <ng-template #noResults>
+          <div class="not-found-state">
+            <div class="not-found-content">
+              <div class="not-found-icon">
+                <i class="bi bi-search"></i>
+              </div>
+              <h3>No Customers Found</h3>
+              <p>We couldn't find any customers matching your search criteria.</p>
+              <div class="not-found-actions">
+                <button class="btn btn-outline-primary" (click)="clearSearch()">
+                  <i class="bi bi-x-circle"></i>
+                  Clear Search
+                </button>
+              </div>
+            </div>
+          </div>
+        </ng-template>
       </div>
     </div>
   </ng-container>
@@ -48,7 +159,12 @@
       </div>
     </ng-container>
     <ng-template #loading>
-      Loading .....
+      <div class="loading-container">
+        <div class="spinner-container">
+          <div class="spinner-ring"></div>
+          <div class="loading-text">Loading Customers...</div>
+        </div>
+      </div>
     </ng-template>
   </ng-template>
 </div>

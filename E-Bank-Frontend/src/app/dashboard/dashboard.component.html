@@ -1,195 +1,1210 @@
-
- <!-- Dashboard Content -->
- <div class="container-fluid mt-4">
-  <!-- Stats Cards -->
-  <div class="row mb-4">
-    <div class="col-md-3">
-      <div class="card bg-white">
-        <div class="card-body">
-          <div class="d-flex align-items-center">
-            <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
-              <i class="bi bi-people text-primary fs-4"></i>
-            </div>
-            <div class="ms-3">
-              <p class="text-muted mb-0">Total Customers</p>
-              <h4>{{ dashboardData.totalNumberOfCustomers }}</h4>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card bg-white">
-        <div class="card-body">
-          <div class="d-flex align-items-center">
-            <div class="bg-primary bg-opacity-10 p-3 rounded-circle">
-              <i class="bi bi-bank text-primary fs-4"></i>
-            </div>
-            <div class="ms-3">
-              <p class="text-muted mb-0">Total Accounts</p>
-              <h4>{{ dashboardData.totalNumberOfBankAccounts }}</h4>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-3">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex align-items-center">
-            <div class="bg-warning bg-opacity-10 p-3 rounded-circle">
-              <i class="bi bi-graph-up text-warning fs-4"></i>
-            </div>
-            <div class="ms-3">
-              <p class="text-muted mb-0">Month Transaction</p>
-              <h4>{{dashboardData.monthlyTransactionSum}}</h4>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-3">
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex align-items-center">
-            <div class="bg-success bg-opacity-10 p-3 rounded-circle">
-              <i class="bi bi-currency-dollar text-success fs-4"></i>
-            </div>
-            <div class="ms-3">
-              <p class="text-muted mb-0">Total Deposits</p>
-              <h4>{{dashboardData.totalBalanceSum}}</h4>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Charts Row -->
-  <div class="row mb-4">
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Transaction Volume</h5>
-          <canvas id="transactionChart"></canvas>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-6">
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Bank Segments</h5>
-          <canvas id="segmentChart"></canvas>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-body">
-      <h5 class="card-title">Recent Accounts</h5>
-      <div class="container">
-        <div class="shadow-md">
-          <div class="card-body p-0">
-            <div class="d-flex text-muted border-bottom p-3">
-              <div class="col-3">Name</div>
-              <div class="col-3">Account Type</div>
-              <div class="col-3">Balance</div>
-              <div class="col-2">Status</div>
-              <div class="col-2">Action</div>
-            </div>
-
-            <div class="user-list">
-              <div class="d-flex align-items-center border-bottom p-3 hover-bg-light" *ngFor="let account of dashboardData.latestBankAccounts">
-                <div class="col-3 d-flex align-items-center">
-                  <div class="rounded-circle  text-white d-flex align-items-center justify-content-center me-3"
-                       style="width: 40px; height: 40px; background-color: #3E5879;">
-                    {{account.customerDTO.name.charAt(0)}}
-                  </div>
-                  <div class="d-flex flex-column">
-                    <span class="text-dark">{{ account.customerDTO.name }}</span>
-                    <small class="text-muted">Added: {{ account.createdAt | date }}</small>
-                  </div>
-                </div>
-                <div class="col-3">
-                  <span class="text-dark">{{ account.type }}</span>
-                </div>
-                <div class="col-3">
-                  <span class="text-dark">${{ account.balance | number: '1.2-2' }}</span>
-                </div>
-                <div class="col-2">
-                  <span *ngIf="account.status === 'ACTIVATED'" class="badge rounded-pill bg-success-subtle text-success">
-                    {{ account.status }}
-                  </span>
-                  <span *ngIf="account.status === 'SUSPENDED'" class="badge rounded-pill bg-danger-subtle text-danger">
-                    {{ account.status }}
-                  </span>
-                  <span *ngIf="account.status === 'CREATED'" class="badge rounded-pill bg-warning-subtle text-warning">
-                    {{ account.status }}
-                  </span>
-                </div>
-                <div class="col-2">
-                  <a href='/customer-accounts/{{account.id}}' class="btn btn-sm btn-outline-primary" style="width: 100px;" >View</a>
-                </div>
+<!-- Dashboard Content -->
+<div class="container-fluid dashboard-container main-section">
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-3">
+        <div class="card border-0 stat-card bg-gradient-primary">
+          <div class="card-body p-4">
+            <div class="d-flex align-items-center">
+              <div class="icon-box bg-white bg-opacity-25 rounded-circle">
+                <i class="bi bi-people text-white fs-4"></i>
+              </div>
+              <div class="ms-3">
+                <p class="text-white mb-0 opacity-75 small text-uppercase">Total Customers</p>
+                <h4 class="text-white mb-0 fw-bold">{{ dashboardData.totalNumberOfCustomers }}</h4>
               </div>
             </div>
           </div>
         </div>
-       </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card border-0 stat-card bg-gradient-info">
+          <div class="card-body p-4">
+            <div class="d-flex align-items-center">
+              <div class="icon-box bg-white bg-opacity-25 rounded-circle">
+                <i class="bi bi-bank text-white fs-4"></i>
+              </div>
+              <div class="ms-3">
+                <p class="text-white mb-0 opacity-75 small text-uppercase">Total Accounts</p>
+                <h4 class="text-white mb-0 fw-bold">{{ dashboardData.totalNumberOfBankAccounts }}</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card border-0 stat-card bg-gradient-warning">
+          <div class="card-body p-4">
+            <div class="d-flex align-items-center">
+              <div class="icon-box bg-white bg-opacity-25 rounded-circle">
+                <i class="bi bi-graph-up text-white fs-4"></i>
+              </div>
+              <div class="ms-3">
+                <p class="text-white mb-0 opacity-75 small text-uppercase">Month Transaction</p>
+                <h4 class="text-white mb-0 fw-bold">{{dashboardData.monthlyTransactionSum}}</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="card border-0 stat-card bg-gradient-success">
+          <div class="card-body p-4">
+            <div class="d-flex align-items-center">
+              <div class="icon-box bg-white bg-opacity-25 rounded-circle">
+                <i class="bi bi-currency-dollar text-white fs-4"></i>
+              </div>
+              <div class="ms-3">
+                <p class="text-white mb-0 opacity-75 small text-uppercase">Total Deposits</p>
+                <h4 class="text-white mb-0 fw-bold">{{dashboardData.totalBalanceSum}}</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Charts Row -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-6">
+        <div class="card border-0 h-100">
+          <div class="card-body">
+            <div class="section-title mb-4">
+              <div class="title-icon">
+                <i class="bi bi-graph-up"></i>
+              </div>
+              <div class="title-content">
+                <h5>Transaction Volume</h5>
+                <p>Monthly transaction analysis</p>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="transactionChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card border-0 h-100">
+          <div class="card-body">
+            <div class="section-title mb-4">
+              <div class="title-icon">
+                <i class="bi bi-pie-chart"></i>
+              </div>
+              <div class="title-content">
+                <h5>Bank Segments</h5>
+                <p>Account distribution by type</p>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="segmentChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Recent Accounts Table -->
+    <div class="card border-0 table-card">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div class="section-title">
+            <div class="title-icon">
+              <i class="bi bi-clock-history"></i>
+            </div>
+            <div class="title-content">
+              <h5 class="mb-1">Recent Accounts</h5>
+              <p class="text-muted small mb-0">Latest account activities and updates</p>
+            </div>
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <div class="search-box">
+              <i class="bi bi-search search-icon"></i>
+              <input 
+                type="text" 
+                class="form-control" 
+                placeholder="Search accounts..." 
+                [(ngModel)]="searchTerm"
+                (input)="applyFilters()"
+              >
+              <button 
+                *ngIf="searchTerm" 
+                class="clear-search" 
+                (click)="clearSearch()"
+              >
+                <i class="bi bi-x-circle"></i>
+              </button>
+            </div>
+            <button 
+              class="btn btn-primary filter-toggle" 
+              [class.active]="showFilters"
+              (click)="toggleFilters()"
+            >
+              <i class="bi bi-funnel-fill me-2"></i>
+              {{ showFilters ? 'Hide Filters' : 'Show Filters' }}
+            </button>
+          </div>
+        </div>
+        <div class="table-responsive custom-table">
+          <div class="filter-section mb-3" [ngClass]="{'show': showFilters}">
+            <div class="filter-container">
+              <div class="filter-group">
+                <label class="filter-label">Account Type</label>
+                <div class="btn-group d-flex flex-wrap gap-2">
+                  <button 
+                    *ngFor="let type of accountTypes" 
+                    class="btn btn-outline-secondary btn-sm"
+                    [class.active]="selectedFilters.type === type"
+                    (click)="filterByType(type)"
+                  >
+                    <i class="bi" [ngClass]="{
+                      'bi-piggy-bank': type === 'SavingAccount',
+                      'bi-credit-card': type === 'CurrentAccount'
+                    }"></i>
+                    <span class="ms-1">{{ type === 'SavingAccount' ? 'Saving' : 'Current' }}</span>
+                  </button>
+                </div>
+              </div>
+              <div class="filter-group">
+                <label class="filter-label">Status</label>
+                <div class="btn-group d-flex flex-wrap gap-2">
+                  <button 
+                    *ngFor="let status of accountStatuses" 
+                    class="btn btn-outline-secondary btn-sm"
+                    [class.active]="selectedFilters.status === status"
+                    (click)="filterByStatus(status)"
+                  >
+                    {{status}}
+                  </button>
+                </div>
+              </div>
+              <div class="filter-group">
+                <label class="filter-label">Balance Range</label>
+                <div class="btn-group d-flex flex-wrap gap-2">
+                  <button 
+                    *ngFor="let range of balanceRanges" 
+                    class="btn btn-outline-secondary btn-sm"
+                    [class.active]="selectedFilters.balanceRange === range.value"
+                    (click)="filterByBalance(range.value)"
+                  >
+                    {{range.label}}
+                  </button>
+                </div>
+              </div>
+              <div class="filter-actions">
+                <button class="btn btn-light btn-sm" (click)="clearFilters()">
+                  <i class="bi bi-x-circle me-1"></i>Clear All
+                </button>
+              </div>
+            </div>
+          </div>
+          <table class="table table-hover align-middle mb-0">
+            <thead>
+              <tr class="bg-primary text-white">
+                <th class="ps-4">
+                  <div class="text-uppercase font-small d-flex align-items-center">
+                    <i class="bi bi-person-circle me-2"></i>
+                    Name
+                  </div>
+                </th>
+                <th>
+                  <div class="text-uppercase font-small d-flex align-items-center">
+                    <i class="bi bi-wallet2 me-2"></i>
+                    Account Type
+                  </div>
+                </th>
+                <th class="text-center">
+                  <div class="text-uppercase font-small d-flex align-items-center justify-content-center">
+                    <i class="bi bi-cash-stack me-2"></i>
+                    Balance
+                  </div>
+                </th>
+                <th class="text-center">
+                  <div class="text-uppercase font-small d-flex align-items-center justify-content-center">
+                    <i class="bi bi-circle-half me-2"></i>
+                    Status
+                  </div>
+                </th>
+                <th class="pe-4 text-center">
+                  <div class="text-uppercase font-small d-flex align-items-center justify-content-center">
+                    <i class="bi bi-gear me-2"></i>
+                    Actions
+                  </div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let account of filteredAccounts" class="border-fade">
+                <td class="ps-4">
+                  <div class="d-flex align-items-center py-2">
+                    <div class="avatar-wrapper me-3">
+                      <div class="avatar rounded-circle text-white d-flex align-items-center justify-content-center">
+                        {{account.customerDTO.name.charAt(0)}}
+                      </div>
+                    </div>
+                    <div>
+                      <h6 class="mb-0 fw-semibold text-dark">{{ account.customerDTO.name }}</h6>
+                      <small class="text-muted d-block">Added: {{ account.createdAt | date:'mediumDate' }}</small>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="account-type-badge" [ngClass]="{
+                    'saving': account.type === 'SavingAccount',
+                    'current': account.type === 'CurrentAccount'
+                  }">
+                    <i class="bi" [ngClass]="{
+                      'bi-piggy-bank': account.type === 'SavingAccount',
+                      'bi-credit-card': account.type === 'CurrentAccount'
+                    }"></i>
+                    {{ account.type === 'SavingAccount' ? 'Saving' : 'Current' }}
+                  </span>
+                </td>
+                <td class="text-center">
+                  <span class="balance-badge" [ngClass]="{
+                    'low': account.balance < 1000,
+                    'medium': account.balance >= 1000 && account.balance <= 5000,
+                    'high': account.balance > 5000
+                  }">
+                    <i class="bi" [ngClass]="{
+                      'bi-currency-dollar': account.balance < 1000,
+                      'bi-cash-stack': account.balance >= 1000 && account.balance <= 5000,
+                      'bi-cash-coin': account.balance > 5000
+                    }"></i>
+                    ${{ account.balance | number: '1.2-2' }}
+                  </span>
+                </td>
+                <td class="text-center">
+                  <span class="status-badge" [ngClass]="{
+                    'activated': account.status === 'ACTIVATED',
+                    'suspended': account.status === 'SUSPENDED',
+                    'created': account.status === 'CREATED'
+                  }">
+                    <i class="bi" [ngClass]="{
+                      'bi-check-circle': account.status === 'ACTIVATED',
+                      'bi-pause-circle': account.status === 'SUSPENDED',
+                      'bi-hourglass-split': account.status === 'CREATED'
+                    }"></i>
+                    {{ account.status }}
+                  </span>
+                </td>
+                <td class="pe-4 text-center">
+                  <div class="action-buttons d-flex justify-content-center">
+                    <button class="btn btn-sm btn-outline-primary rounded-pill" (click)="viewAccountDetails(account.id)">
+                      <i class="bi bi-eye me-1"></i>View Details
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr *ngIf="searchTerm && filteredAccounts.length === 0" class="no-results">
+                <td colspan="5">
+                  <div class="no-data-found">
+                    <div class="no-data-icon">
+                      <i class="bi bi-search"></i>
+                    </div>
+                    <h4 class="no-data-title">No Results Found</h4>
+                    <p class="no-data-text">
+                      We couldn't find any accounts matching your search criteria. Try adjusting your filters or search terms.
+                    </p>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   </div>
- </div>
+  
+  <style>
+    .dashboard-container {
+      padding: 2rem;
+      background-color: #f8f9fc;
+    }
 
- <style>
-  .hover-bg-light:hover {
-   background-color: #f8f9fa;
-   cursor: pointer;
-  }
+    .bg-gradient-primary {
+      background: linear-gradient(45deg, #4e73df, #224abe);
+    }
+    
+    .bg-gradient-info {
+      background: linear-gradient(45deg, #36b9cc, #1a8997);
+    }
+    
+    .bg-gradient-warning {
+      background: linear-gradient(45deg, #f6c23e, #dda20a);
+    }
+    
+    .bg-gradient-success {
+      background: linear-gradient(45deg, #1cc88a, #13855c);
+    }
+  
+    .stat-card {
+      transition: all 0.3s ease;
+      box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+      border-radius: 1rem;
+    }
+  
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 1rem 3rem rgba(0,0,0,.175);
+    }
+  
+    .icon-box {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  
+    .chart-card, .table-card {
+      box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+      border-radius: 1rem;
+      transition: all 0.3s ease;
+      background-color: white;
+    }
+  
+    .chart-card:hover, .table-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 1rem 3rem rgba(0,0,0,.175);
+    }
 
-  .badge {
-   font-weight: normal;
-   padding: 8px 12px;
-  }
+    .chart-card .card-body {
+      height: 400px;
+    }
 
-  .bg-success-subtle {
-   background-color: #d1e7dd !important;
-  }
+    .chart-container {
+      height: calc(100% - 40px);
+      position: relative;
+    }
 
-  .bg-warning-subtle {
-   background-color: #fff3cd !important;
-  }
+    .chart-container canvas {
+      max-height: 100% !important;
+    }
+  
+    .avatar {
+      width: 40px;
+      height: 40px;
+      background-color: #4e73df;
+      font-weight: 500;
+      font-size: 1.1rem;
+      box-shadow: 0 3px 6px rgba(78,115,223,0.2);
+    }
+  
+    .badge {
+      padding: 0.5rem 1rem;
+      font-weight: 500;
+      border-radius: 30px;
+    }
+  
+    .status-active {
+      background-color: #e8f5e9;
+      color: #1b5e20;
+    }
+  
+    .status-suspended {
+      background-color: #ffebee;
+      color: #b71c1c;
+    }
+  
+    .status-created {
+      background-color: #fff3e0;
+      color: #e65100;
+    }
+  
+    .table > :not(caption) > * > * {
+      padding: 1rem;
+    }
+  
+    .btn-outline-primary {
+      border-radius: 20px;
+      transition: all 0.2s;
+    }
+  
+    .btn-outline-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0,0,0,.1);
+    }
+  
+    .btn-light {
+      background-color: #f8f9fc;
+      border-color: #e3e6f0;
+      color: #6e707e;
+      transition: all 0.2s;
+    }
 
-  .bg-danger-subtle {
-    background-color: #ff8888 !important;
-   }
+    .btn-light:hover {
+      background-color: #e3e6f0;
+      border-color: #d1d3e2;
+      color: #2e3650;
+    }
 
-  .user-list > div {
-   transition: background-color 0.2s ease;
-  }
+    .table th {
+      border-top: none;
+      padding-top: 1.25rem;
+      padding-bottom: 1.25rem;
+      white-space: nowrap;
+      background: transparent;
+    }
 
-  .user-list > div:hover {
-   background-color: #f8f9fa;
-  }
+    .table thead tr {
+      background: linear-gradient(45deg, #4e73df, #224abe) !important;
+    }
 
-  .card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
+    .table thead th {
+      border: none !important;
+      font-weight: 600;
+      color: #ffffff !important;
+      background: transparent !important;
+    }
 
-  .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-  }
+    .table thead th .font-small {
+      opacity: 1;
+      color: #ffffff !important;
+    }
 
-  .rounded-circle {
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+    .table thead th i {
+      font-size: 1rem;
+      color: #ffffff !important;
+    }
 
-  canvas {
-    max-height: 300px;
-  }
+    .table tbody tr th,
+    .table tbody tr td {
+      background-color: #ffffff;
+    }
+
+    .table tbody tr:hover td {
+      background-color: #f8f9fc;
+    }
+
+    .custom-table {
+      border-radius: 1rem;
+      background: white;
+      box-shadow: 0 2px 8px rgba(78,115,223,0.08);
+    }
+
+    .table tr {
+      transition: all 0.2s ease;
+    }
+
+    .table tbody tr:hover {
+      background-color: #f8f9fc;
+    }
+
+    .font-small {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    .border-fade {
+      border-color: rgba(0,0,0,.05);
+    }
+
+    .avatar-wrapper {
+      position: relative;
+    }
+
+    .avatar {
+      width: 42px;
+      height: 42px;
+      background-color: #4e73df;
+      font-weight: 500;
+      font-size: 1.1rem;
+      box-shadow: 0 3px 6px rgba(78,115,223,0.2);
+    }
+  
+    .account-type-badge {
+      padding: 0.4rem 1rem;
+      border-radius: 1rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      position: relative;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      transition: all 0.2s ease;
+    }
+
+    .account-type-badge:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .account-type-badge i {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    .account-type-badge.saving {
+      background: linear-gradient(45deg, #9333ea10, #9333ea20);
+      color: #9333ea;
+    }
+
+    .account-type-badge.saving i {
+      color: #9333ea;
+    }
+
+    .account-type-badge.current {
+      background: linear-gradient(45deg, #0ea5e910, #0ea5e920);
+      color: #0ea5e9;
+    }
+
+    .account-type-badge.current i {
+      color: #0ea5e9;
+    }
+
+    .balance-badge {
+      padding: 0.4rem 1rem;
+      border-radius: 1rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      position: relative;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      transition: all 0.2s ease;
+    }
+
+    .balance-badge i {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    .balance-badge.low {
+      background: linear-gradient(45deg, #4e73df10, #4e73df20);
+      color: #4e73df;
+    }
+
+    .balance-badge.low i {
+      color: #4e73df;
+    }
+
+    .balance-badge.medium {
+      background: linear-gradient(45deg, #224abe10, #224abe20);
+      color: #224abe;
+    }
+
+    .balance-badge.medium i {
+      color: #224abe;
+    }
+
+    .balance-badge.high {
+      background: linear-gradient(45deg, #1a3a9710, #1a3a9720);
+      color: #1a3a97;
+    }
+
+    .balance-badge.high i {
+      color: #1a3a97;
+    }
+
+    .balance-badge:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(78,115,223,0.2);
+    }
+
+    .status-badge {
+      padding: 0.4rem 1rem;
+      border-radius: 1rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      position: relative;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      transition: all 0.2s ease;
+    }
+
+    .status-badge i {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    .status-badge.activated {
+      background: linear-gradient(45deg, #1cc88a10, #1cc88a20);
+      color: #1cc88a;
+    }
+
+    .status-badge.activated i {
+      color: #1cc88a;
+    }
+
+    .status-badge.suspended {
+      background: linear-gradient(45deg, #ff3e3e10, #ff3e3e20);
+      color: #ff3e3e;
+    }
+
+    .status-badge.suspended i {
+      color: #ff3e3e;
+    }
+
+    .status-badge.created {
+      background: linear-gradient(45deg, #f6c23e10, #f6c23e20);
+      color: #f6c23e;
+    }
+
+    .status-badge.created i {
+      color: #f6c23e;
+    }
+
+    .status-badge:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+      margin: 0 auto;
+    }
+
+    .btn-outline-primary {
+      border-width: 1.5px;
+      padding: 0.5rem 1rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .btn-outline-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(78,115,223,0.2);
+    }
+
+    .table th:last-child,
+    .table td:last-child {
+      text-align: center;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      position: relative;
+    }
+
+    .title-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 1rem;
+      background: linear-gradient(135deg, #4e73df, #224abe);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(78,115,223,0.25);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .title-icon::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(to bottom, #4e73df, #224abe);
+      top: 0;
+      left: 0;
+      transition: all 0.3s ease;
+    }
+
+    .title-icon:hover::after {
+      transform: translateX(100%);
+    }
+
+    .title-icon i {
+      font-size: 1.75rem;
+      color: white;
+      position: relative;
+      z-index: 1;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    }
+
+    .title-content {
+      position: relative;
+    }
+
+    .title-content h5 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #2e3650;
+      margin-bottom: 0.35rem;
+      letter-spacing: -0.5px;
+      position: relative;
+      display: inline-block;
+    }
+
+    .title-content h5::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 40%;
+      height: 3px;
+      background: linear-gradient(to right, #4e73df, transparent);
+      border-radius: 2px;
+    }
+
+    .title-content p {
+      color: #858796;
+      font-size: 0.875rem;
+      margin: 0;
+      opacity: 0.85;
+    }
+
+    .section-title:hover .title-icon {
+      transform: scale(1.05);
+      box-shadow: 0 6px 15px rgba(78,115,223,0.3);
+    }
+
+    .card-header-controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn-group .btn {
+      padding: 0.5rem 1rem;
+      font-weight: 500;
+      border-radius: 8px;
+      margin-left: 0.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn-group .btn:hover {
+      background-color: #e3e6f0;
+      color: #2e3650;
+      transform: translateY(-1px);
+    }
+
+    .btn-group .btn i {
+      font-size: 0.9rem;
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1;
+      max-width: 400px;
+    }
+
+    .search-box .form-control {
+      padding-left: 2.5rem;
+      padding-right: 2.5rem;
+      height: 42px;
+      border-radius: 21px;
+      border: 2px solid #e3e6f0;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #2e3650;
+      transition: all 0.2s ease;
+      background: #fff;
+    }
+
+    .search-box .form-control:focus {
+      border-color: #4e73df;
+      box-shadow: 0 0 0 0.2rem rgba(78,115,223,0.1);
+    }
+
+    .search-box .search-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #4e73df;
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
+    .search-box .clear-search {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      border: none;
+      background: none;
+      color: #6e707e;
+      padding: 0;
+      cursor: pointer;
+      opacity: 0.7;
+      transition: all 0.2s ease;
+    }
+
+    .search-box .clear-search:hover {
+      opacity: 1;
+      color: #e74a3b;
+    }
+
+    .filter-toggle {
+      height: 42px;
+      padding: 0 1.5rem !important;
+      border-radius: 21px !important;
+      background: linear-gradient(45deg, #4e73df, #224abe) !important;
+      border: none !important;
+      color: white !important;
+      font-weight: 500 !important;
+      font-size: 0.9rem;
+      transition: all 0.2s ease !important;
+      display: flex !important;
+      align-items: center !important;
+      gap: 0.5rem;
+      box-shadow: 0 2px 4px rgba(78,115,223,0.2);
+    }
+
+    .filter-toggle:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(78,115,223,0.3) !important;
+      background: linear-gradient(45deg, #224abe, #1a3a97) !important;
+    }
+
+    .filter-toggle.active {
+      background: linear-gradient(45deg, #224abe, #1a3a97) !important;
+    }
+
+    .filter-toggle i {
+      font-size: 1.1rem;
+      transition: transform 0.2s ease;
+    }
+
+    .filter-toggle.active i {
+      transform: rotate(180deg);
+    }
+
+    .filter-section {
+      background: linear-gradient(to right, #ffffff, #f8f9fc);
+      border: 1px solid rgba(78,115,223,0.1);
+      border-radius: 1rem;
+      margin-bottom: 1rem;
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: all 0.3s ease-in-out;
+      visibility: hidden;
+      box-shadow: 0 2px 8px rgba(78,115,223,0.08);
+    }
+
+    .filter-section.show {
+      max-height: 500px;
+      opacity: 1;
+      visibility: visible;
+      margin: 1rem 0;
+    }
+
+    .filter-container {
+      padding: 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      align-items: flex-start;
+      position: relative;
+    }
+
+    .filter-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(to bottom, #4e73df, #224abe);
+      border-radius: 2px;
+    }
+
+    .filter-group {
+      flex: 1;
+      min-width: 220px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      position: relative;
+    }
+
+    .filter-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #4e73df;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .filter-label::after {
+      content: '';
+      height: 1px;
+      flex: 1;
+      background: linear-gradient(to right, rgba(78,115,223,0.2), transparent);
+    }
+
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem !important;
+    }
+
+    .btn-outline-secondary {
+      color: #2e3650;
+      border: 1.5px solid #e3e6f0;
+      background-color: white;
+      font-size: 0.875rem;
+      padding: 0.5rem 1rem;
+      transition: all 0.2s ease;
+      border-radius: 8px;
+      font-weight: 500;
+    }
+
+    .btn-outline-secondary:hover {
+      background-color: #4e73df10;
+      border-color: #4e73df;
+      color: #4e73df;
+      transform: translateY(-1px);
+    }
+
+    .btn-outline-secondary.active {
+      background: linear-gradient(45deg, #4e73df, #224abe) !important;
+      border-color: #4e73df !important;
+      color: white !important;
+      box-shadow: 0 4px 8px rgba(78,115,223,0.25);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline-secondary i {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    .filter-actions {
+      display: flex;
+      align-items: flex-end;
+      padding: 0.5rem 0;
+      margin-top: auto;
+    }
+
+    .filter-actions .btn {
+      font-weight: 500;
+      transition: all 0.2s ease;
+      padding: 0.5rem 1.25rem;
+      border-radius: 8px;
+      color: #6e707e;
+      border: 1.5px solid #e3e6f0;
+    }
+
+    .filter-actions .btn:hover {
+      background-color: #ff3e3e15;
+      border-color: #ff3e3e;
+      color: #ff3e3e;
+      transform: translateY(-1px);
+    }
+
+    .filter-actions .btn i {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    /* Status-specific colors */
+    .btn-outline-secondary[class*="ACTIVATED"].active {
+      background: linear-gradient(45deg, #1cc88a, #13855c) !important;
+      border-color: #1cc88a !important;
+    }
+
+    .btn-outline-secondary[class*="SUSPENDED"].active {
+      background: linear-gradient(45deg, #e74a3b, #be2617) !important;
+      border-color: #e74a3b !important;
+    }
+
+    .btn-outline-secondary[class*="CREATED"].active {
+      background: linear-gradient(45deg, #f6c23e, #dda20a) !important;
+      border-color: #f6c23e !important;
+    }
+
+    /* Balance range specific colors */
+    .btn-outline-secondary[class*="low"].active {
+      background: linear-gradient(45deg, #36b9cc, #258391) !important;
+      border-color: #36b9cc !important;
+    }
+
+    .btn-outline-secondary[class*="medium"].active {
+      background: linear-gradient(45deg, #1cc88a, #13855c) !important;
+      border-color: #1cc88a !important;
+    }
+
+    .btn-outline-secondary[class*="high"].active {
+      background: linear-gradient(45deg, #f6c23e, #dda20a) !important;
+      border-color: #f6c23e !important;
+    }
+
+    .card.table-card {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 2px 8px rgba(78,115,223,0.08);
+      margin-bottom: 1.5rem;
+      border: none;
+    }
+
+    .card.table-card .card-body {
+      padding: 1.5rem;
+    }
+
+    .table-responsive.custom-table {
+      background: white;
+      border-radius: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    table thead tr:first-child th:first-child {
+      border-top-left-radius: 0.5rem;
+    }
+
+    table thead tr:first-child th:last-child {
+      border-top-right-radius: 0.5rem;
+    }
+
+    .bg-primary {
+      background: linear-gradient(45deg, #4e73df, #224abe) !important;
+    }
+
+    .main-section {
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 2px 8px rgba(78,115,223,0.08);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .no-data-found {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3.5rem 1rem;
+      text-align: center;
+    }
+
+    .no-data-icon {
+      width: 96px;
+      height: 96px;
+      background: linear-gradient(45deg, #4e73df10, #224abe10);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      position: relative;
+      animation: pulse 2s infinite;
+    }
+
+    .no-data-icon i {
+      font-size: 3rem;
+      color: #4e73df;
+      animation: bounce 2s infinite;
+    }
+
+    .no-data-title {
+      color: #2e3650;
+      font-weight: 600;
+      font-size: 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .no-data-text {
+      color: #858796;
+      margin-bottom: 1.5rem;
+      font-size: 1rem;
+      max-width: 300px;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(78,115,223,0.4);
+      }
+      70% {
+        box-shadow: 0 0 0 20px rgba(78,115,223,0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(78,115,223,0);
+      }
+    }
+
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .card {
+      border-radius: 1rem;
+      box-shadow: 0 2px 8px rgba(78,115,223,0.08);
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(78,115,223,0.12);
+    }
+
+    .chart-container {
+      position: relative;
+      height: 300px;
+      margin-top: 1rem;
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    /* Ensure consistent styling for all section titles */
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      position: relative;
+    }
+
+    .title-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 1rem;
+      background: linear-gradient(135deg, #4e73df, #224abe);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(78,115,223,0.25);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .title-icon::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, rgba(255,255,255,0.15), rgba(255,255,255,0));
+      top: 0;
+      left: 0;
+      transition: all 0.3s ease;
+    }
+
+    .title-icon:hover::after {
+      transform: translateX(100%);
+    }
+
+    .title-icon i {
+      font-size: 1.75rem;
+      color: white;
+      position: relative;
+      z-index: 1;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+    }
+
+    .card:hover .title-icon {
+      transform: scale(1.05);
+      box-shadow: 0 6px 15px rgba(78,115,223,0.3);
+    }
   </style>

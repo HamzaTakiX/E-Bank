@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { Transaction } from '../model/transaction.model';
 import { AccountsService } from '../services/accounts.service';
@@ -7,7 +7,9 @@ import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
-
+/**
+ * Component for displaying transactions history
+ */
 @Component({
   selector: 'app-transactions-history',
   templateUrl: './transactions-history.component.html',
@@ -21,7 +23,7 @@ import 'jspdf-autotable';
     ])
   ]
 })
-export class TransactionsHistoryComponent implements OnInit {
+export class TransactionsHistoryComponent implements OnInit, AfterViewInit {
   transactions: Transaction[] = [];
   filteredTransactions: Transaction[] = [];
   searchTerm: string = '';
@@ -31,6 +33,12 @@ export class TransactionsHistoryComponent implements OnInit {
   currentPage: number = 1;
   pageSize: number = 10;
   totalTransactions: number = 0;
+  isLoading: boolean = true;
+  copiedId: string | null = null;
+  copiedTransactionId: number | null = null;
+  hoveredRowId: string | null = null;
+  selectedTransaction: Transaction | null = null;
+  showModal: boolean = false;
 
   constructor(private accountsService: AccountsService) { }
 
@@ -39,11 +47,17 @@ export class TransactionsHistoryComponent implements OnInit {
     this.loadTransactions();
   }
 
+  ngAfterViewInit() {
+    this.checkDescriptionOverflow();
+  }
+
   loadTransactions() {
+    this.isLoading = true;
     this.accountsService.getAllAccountsHistory(this.currentPage, this.pageSize).subscribe(data => {
       this.transactions = data;
       this.totalTransactions = data.length;
       this.filterTransactions();
+      this.isLoading = false;
     });
   }
   filterTransactions() {
@@ -187,4 +201,55 @@ export class TransactionsHistoryComponent implements OnInit {
     this.filterTransactions();
   }
 
+  resetFilters(): void {
+    this.searchTerm = '';
+    this.selectedType = '';
+    this.fromDate = null;
+    this.toDate = null;
+    this.filterTransactions();
+  }
+
+  copyToClipboard(text: string, transactionId: number) {
+    navigator.clipboard.writeText(text).then(() => {
+      this.copiedId = text;
+      this.copiedTransactionId = transactionId;
+      setTimeout(() => {
+        this.copiedId = null;
+        this.copiedTransactionId = null;
+      }, 2000); // Reset after 2 seconds
+    });
+  }
+
+  truncateAccountId(accountId: string): string {
+    if (!accountId) return '';
+    const length = accountId.length;
+    return accountId.substring(0, length / 2) + '•••';
+  }
+
+  getUniqueRowId(transaction: Transaction): string {
+    return `${transaction.id}_${transaction.bank_account_id}`;
+  }
+
+  openTransactionDetails(transaction: Transaction, event: Event) {
+    event.stopPropagation();
+    this.selectedTransaction = transaction;
+    this.showModal = true;
+    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    this.checkDescriptionOverflow();
+  }
+
+  closeModal() {
+    this.showModal = false;
+    this.selectedTransaction = null;
+    document.body.style.overflow = 'auto'; // Restore scrolling
+  }
+
+  checkDescriptionOverflow() {
+    setTimeout(() => {
+      const descriptionElement = document.querySelector('.description-text');
+      if (descriptionElement && descriptionElement.scrollHeight > descriptionElement.clientHeight) {
+        descriptionElement.classList.add('has-overflow');
+      }
+    }, 100);
+  }
 }
