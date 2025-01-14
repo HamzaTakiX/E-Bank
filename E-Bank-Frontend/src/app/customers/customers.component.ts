@@ -69,7 +69,7 @@ export class CustomersComponent implements OnInit {
           this.successMessage = `Customer ${this.customerToDelete?.name} has been successfully deleted`;
           this.showDeleteModal = false;
           this.customerToDelete = null;
-          
+
           // Refresh the list after a short delay
           setTimeout(() => {
             this.handleSearchCustomers();
@@ -93,7 +93,7 @@ export class CustomersComponent implements OnInit {
   }
 
   handleCustomerAccounts(customer: Customer) {
-    this.router.navigateByUrl("/customer-accounts/" + customer.id, { state: { customer: customer } });
+    this.router.navigateByUrl("/admin/customer-accounts/" + customer.id, { state: { customer: customer } });
   }
 
   clearSearch() {
@@ -171,15 +171,15 @@ export class CustomersComponent implements OnInit {
         cellPadding: 8
       },
       columnStyles: {
-        0: { 
+        0: {
           cellWidth: 25,
           halign: 'center'
         },
-        1: { 
+        1: {
           cellWidth: 70,
           halign: 'left'
         },
-        2: { 
+        2: {
           cellWidth: 85,
           halign: 'left'
         }

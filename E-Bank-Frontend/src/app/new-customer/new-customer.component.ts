@@ -31,7 +31,7 @@ export class NewCustomerComponent implements OnInit {
         this.showSuccessMessage = true;
         this.successMessage = "Customer has been successfully saved!";
         setTimeout(() => {
-          this.router.navigateByUrl("/customers");
+          this.router.navigateByUrl("/admin/customers");
         }, 1500);
       },
       error : err => {

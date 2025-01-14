@@ -14,4 +14,8 @@ public interface CustomerRepository extends JpaRepository<Customer,Long> {
 
     @Query("SELECT COUNT(c) FROM Customer c")
     Long getTotalNumberOfCustomers();
+
+    @Query("select c from Customer c where c.email = :email and c.password = :password  ")
+    Customer checkCustomer(@Param("email") String email, @Param("password") String password);
+
 }

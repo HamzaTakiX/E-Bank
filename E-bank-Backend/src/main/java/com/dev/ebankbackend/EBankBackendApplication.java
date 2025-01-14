@@ -47,7 +47,7 @@ public class EBankBackendApplication {
                             BankAccountRepository bankAccountRepository,
                             AccountOperationRepository accountOperationRepository) {
         return args -> {
-            Stream.of("Hamza")
+            Stream.of("Hamza","Ayman","ismail")
                     .forEach(name -> {
                         Customer customer = new Customer();
                         customer.setName(name);

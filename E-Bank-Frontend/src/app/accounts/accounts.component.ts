@@ -4,6 +4,7 @@ import {AccountsService} from "../services/accounts.service";
 import {BehaviorSubject, catchError, Observable, throwError, EMPTY} from "rxjs";
 import {AccountDetails} from "../model/account.model";
 import { ActivatedRoute } from '@angular/router';
+import {AuthService} from "../services/auth.service";
 
 @Component({
   selector: 'app-accounts',
@@ -25,7 +26,7 @@ export class AccountsComponent implements OnInit {
   accountId: string = '';
   notification: { type: 'success' | 'error', message: string } | null = null;
 
-  constructor(private fb : FormBuilder, private accountService : AccountsService, private route: ActivatedRoute) { }
+  constructor(private fb : FormBuilder, private accountService : AccountsService, private route: ActivatedRoute, public authService: AuthService) { }
 
   ngOnInit(): void {
     this.accountFormGroup = this.fb.group({
@@ -165,9 +166,6 @@ export class AccountsComponent implements OnInit {
         op.type?.toLowerCase() === this.selectedFilter
       );
     }
-
-    // Sort by operationDate in descending order
-    operations.sort((a, b) => new Date(b.operationDate).getTime() - new Date(a.operationDate).getTime());
 
     return operations;
   }

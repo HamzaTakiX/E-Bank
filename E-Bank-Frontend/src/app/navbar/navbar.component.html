@@ -12,7 +12,7 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link text-white position-relative px-4" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
+          <a class="nav-link text-white position-relative px-4" routerLink="/admin/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
              style="transition: all 0.3s;"
              onmouseover="this.style.transform='translateY(-3px)';this.style.color='#2196f3';"
              onmouseout="this.style.transform='translateY(0)';this.style.color='#fff';">
@@ -21,7 +21,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white position-relative px-4" routerLink="/accounts" routerLinkActive="active"
+          <a class="nav-link text-white position-relative px-4" routerLink="/admin/accounts" routerLinkActive="active"
              style="transition: all 0.3s;"
              onmouseover="this.style.transform='translateY(-3px)';this.style.color='#ff4081';"
              onmouseout="this.style.transform='translateY(0)';this.style.color='#fff';">
@@ -30,7 +30,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white position-relative px-4" routerLink="/customers" routerLinkActive="active"
+          <a class="nav-link text-white position-relative px-4" routerLink="/admin/customers" routerLinkActive="active"
              style="transition: all 0.3s;"
              onmouseover="this.style.transform='translateY(-3px)';this.style.color='#4caf50';"
              onmouseout="this.style.transform='translateY(0)';this.style.color='#fff';">
@@ -39,7 +39,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white position-relative px-4" routerLink="/transactions" routerLinkActive="active"
+          <a class="nav-link text-white position-relative px-4" routerLink="/admin/transactions" routerLinkActive="active"
              style="transition: all 0.3s;"
              onmouseover="this.style.transform='translateY(-3px)';this.style.color='#4caf50';"
              onmouseout="this.style.transform='translateY(0)';this.style.color='#fff';">
@@ -48,7 +48,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white position-relative px-4" routerLink="/chatbot" routerLinkActive="active"
+          <a class="nav-link text-white position-relative px-4" routerLink="/admin/chatbot" routerLinkActive="active"
              style="transition: all 0.3s;"
              onmouseover="this.style.transform='translateY(-3px)';this.style.color='#4caf50';"
              onmouseout="this.style.transform='translateY(0)';this.style.color='#fff';">
@@ -56,7 +56,18 @@
             <span>ChatBot</span>
           </a>
         </li>
+        <span *ngIf="authService.isAuthenticated">
+          <li class="nav-item ">
+            <a class="nav-item text-white">
+              {{this.authService.username}}
+            </a>
+          </li>
+          <li class="nav-item">
+            <button (click)="handleLogout()" class="btn btn-success">Logout</button>
+          </li>
+        </span>
       </ul>
     </div>
   </div>
-</nav>
+ </nav>
+

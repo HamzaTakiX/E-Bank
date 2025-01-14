@@ -238,13 +238,13 @@ export class DashboardComponent implements OnInit {
     let filtered = this.dashboardData.latestBankAccounts;
 
     if (this.selectedFilters.type) {
-      filtered = filtered.filter((account: any) => 
+      filtered = filtered.filter((account: any) =>
         account.type === this.selectedFilters.type
       );
     }
 
     if (this.selectedFilters.status) {
-      filtered = filtered.filter((account: any) => 
+      filtered = filtered.filter((account: any) =>
         account.status === this.selectedFilters.status
       );
     }
@@ -281,7 +281,7 @@ export class DashboardComponent implements OnInit {
   }
 
   viewAccountDetails(accountId: string) {
-    this.router.navigate(['/accounts'], { 
+    this.router.navigate(['/admin/accounts'], {
       queryParams: { id: accountId },
       fragment: 'top'
     });

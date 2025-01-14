@@ -25,10 +25,10 @@
             <form [formGroup]="searchFormGroup" (ngSubmit)="handleSearchCustomers()">
               <div class="search-box">
                 <i class="bi bi-search search-icon"></i>
-                <input 
-                  type="text" 
-                  class="search-input" 
-                  formControlName="keyword" 
+                <input
+                  type="text"
+                  class="search-input"
+                  formControlName="keyword"
                   placeholder="Search customers..."
                 >
                 <button class="search-button" type="submit">
@@ -131,7 +131,7 @@
             </div>
           </div>
         </ng-template>
-        
+
         <ng-template #noResults>
           <div class="not-found-state">
             <div class="not-found-content">
@@ -167,31 +167,4 @@
       </div>
     </ng-template>
   </ng-template>
-</div>
-
-<!-- Delete Confirmation Modal -->
-<div class="modal-overlay" *ngIf="showDeleteModal" (click)="cancelDelete()">
-  <div class="modal-container" (click)="$event.stopPropagation()">
-    <div class="modal-content">
-      <div class="modal-icon">
-        <i class="bi bi-exclamation-triangle"></i>
-      </div>
-      <h3 class="modal-title">Confirm Delete</h3>
-      <p class="modal-message">
-        Are you sure you want to delete customer <span class="highlight">{{customerToDelete?.name}}</span>?
-        <br>
-        This action cannot be undone.
-      </p>
-      <div class="modal-actions">
-        <button class="btn cancel-btn" (click)="cancelDelete()">
-          <i class="bi bi-x"></i>
-          Cancel
-        </button>
-        <button class="btn confirm-btn" (click)="confirmDelete()">
-          <i class="bi bi-trash3"></i>
-          Delete
-        </button>
-      </div>
-    </div>
-  </div>
 </div>
