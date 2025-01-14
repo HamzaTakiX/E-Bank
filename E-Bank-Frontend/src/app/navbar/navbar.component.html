@@ -10,7 +10,7 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link text-white position-relative px-4" routerLink="/"
+          <a class="nav-link text-white position-relative px-4" routerLink="/admin/home"
              style="transition: all 0.3s;"
              onmouseover="this.style.transform='translateY(-3px)';this.style.color='#2196f3';"
              onmouseout="this.style.transform='translateY(0)';this.style.color='#fff';">
@@ -18,7 +18,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white position-relative px-4" routerLink="/accounts"
+          <a class="nav-link text-white position-relative px-4" routerLink="/admin/accounts"
              style="transition: all 0.3s;"
              onmouseover="this.style.transform='translateY(-3px)';this.style.color='#ff4081';"
              onmouseout="this.style.transform='translateY(0)';this.style.color='#fff';">
@@ -26,15 +26,15 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white position-relative px-4" routerLink="/customers"
+          <a class="nav-link text-white position-relative px-4" routerLink="/admin/customers"
              style="transition: all 0.3s;"
              onmouseover="this.style.transform='translateY(-3px)';this.style.color='#4caf50';"
              onmouseout="this.style.transform='translateY(0)';this.style.color='#fff';">
-            <i class="bi bi-people me-2"></i>Custormers
+            <i class="bi bi-people me-2"></i>Customers
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white position-relative px-4" routerLink="/transactions"
+          <a class="nav-link text-white position-relative px-4" routerLink="/admin/transactions"
              style="transition: all 0.3s;"
              onmouseover="this.style.transform='translateY(-3px)';this.style.color='#4caf50';"
              onmouseout="this.style.transform='translateY(0)';this.style.color='#fff';">
@@ -42,13 +42,23 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white position-relative px-4" routerLink="/"
+          <a class="nav-link text-white position-relative px-4" routerLink="/admin/"
              style="transition: all 0.3s;"
              onmouseover="this.style.transform='translateY(-3px)';this.style.color='#4caf50';"
              onmouseout="this.style.transform='translateY(0)';this.style.color='#fff';">
             <i class="bi bi-robot me-2"></i>ChatBot
           </a>
         </li>
+        <span *ngIf="authService.isAuthenticated==true">
+          <li class="nav-item ">
+            <a class="nav-item text-white">
+              {{this.authService.username}}
+            </a>
+          </li>
+          <li class="nav-item">
+            <button (click)="handleLogout()" class="btn btn-success">Logout</button>
+          </li>
+        </span>
       </ul>
     </div>
   </div>

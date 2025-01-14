@@ -1,7 +1,7 @@
 <div class="container mt-2">
   <ng-container *ngIf="customers | async as listCustomers; else failureOrLading">
     <div class="card">
-      <div class="card-header d-flex  justify-content-between"><p>Customers</p>  <a routerLink="/new-customer" class="btn btn-success">ADD Customers</a></div>
+      <div class="card-header d-flex  justify-content-between"><p>Customers</p>  <a *ngIf="authService.roles.includes('ADMIN')" routerLink="/admin/new-customer" class="btn btn-success">ADD Customers</a></div>
       <div class="card-body">
         <div *ngIf="searchFormGroup">
           <form [formGroup]="searchFormGroup" (ngSubmit)="handleSearchCustomers()">
