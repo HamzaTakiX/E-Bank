@@ -49,7 +49,9 @@ export class CustomersComponent implements OnInit {
       })
     ).subscribe({
       next: (data) => {
+
         this.customers$.next(data);
+        console.log(this.customers$)
         this.isLoading = false;
       },
       error: () => this.isLoading = false
@@ -81,7 +83,7 @@ export class CustomersComponent implements OnInit {
           this.successMessage = `Customer ${this.customerToDelete?.name} has been successfully deleted`;
           this.showDeleteModal = false;
           this.customerToDelete = null;
-          
+
           // Hide success message after a delay
           setTimeout(() => {
             this.showSuccessMessage = false;

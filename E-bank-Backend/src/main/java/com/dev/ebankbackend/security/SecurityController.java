@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
+@CrossOrigin("*")
 @RequestMapping("/auth")
 public class SecurityController {
 
@@ -29,32 +30,32 @@ public class SecurityController {
         return authentication;
     }
     @PostMapping("/login")
-    public Map<String, String> login(@RequestParam String email, @RequestParam String password) {
+    public Map<String, String> login(@RequestBody Map<String, String> credentials) {
         try {
+            System.out.println(credentials.get("email"));
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(email, password)
+                    new UsernamePasswordAuthenticationToken(credentials.get("email"), credentials.get("password"))
             );
-            System.out.println(authentication);
+
             Instant now = Instant.now();
-            String roles = authentication.getAuthorities().stream()
+            String scope = authentication.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.joining(" "));
 
             JwtClaimsSet claims = JwtClaimsSet.builder()
+                    .subject(credentials.get("email"))
                     .issuedAt(now)
                     .expiresAt(now.plus(30, ChronoUnit.MINUTES))
-                    .subject(authentication.getName())
-                    .claim("roles", roles)
+                    .claim("scope", scope)
                     .build();
 
             String token = jwtEncoder.encode(JwtEncoderParameters.from(
-                    JwsHeader.with(MacAlgorithm.HS512).build(),
-                    claims
-            )).getTokenValue();
+                    JwsHeader.with(MacAlgorithm.HS512).build(), claims)).getTokenValue();
 
             return Map.of("access-token", token);
-        } catch (Exception e) {
-            throw new RuntimeException("Invalid email or password", e);
+        } catch (Exception ex) {
+            throw new RuntimeException("Authentication failed: " + ex.getMessage());
         }
     }
+
 }

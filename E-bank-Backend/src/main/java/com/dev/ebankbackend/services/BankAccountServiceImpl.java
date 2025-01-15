@@ -4,6 +4,7 @@ import com.dev.ebankbackend.dtos.*;
 import com.dev.ebankbackend.entities.*;
 import com.dev.ebankbackend.enums.AccountStatus;
 import com.dev.ebankbackend.enums.OperationType;
+import com.dev.ebankbackend.enums.UserRole;
 import com.dev.ebankbackend.exceptions.BalanceNotSufficientException;
 import com.dev.ebankbackend.exceptions.BankAccountNotFoundException;
 import com.dev.ebankbackend.exceptions.CustomerNotFoundException;
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +36,16 @@ public class BankAccountServiceImpl implements BankAccountService {
 
     @Override
     public NewCustomerDTO saveCustomer(NewCustomerDTO newCustomerDTO) {
+        System.out.println(newCustomerDTO.getEmail());
+        System.out.println(newCustomerDTO.getName());
+        System.out.println(newCustomerDTO.getPassword());
+
+
         Customer customer=dtoMapper.fromNewCustomerDTO(newCustomerDTO);
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String hashedPassword = passwordEncoder.encode(customer.getPassword());
+        customer.setPassword(hashedPassword);
+        customer.setRole(UserRole.valueOf("USER"));
         Customer savedCustomer = customerRepository.save(customer);
         return dtoMapper.fromCustomerV2(savedCustomer);
     }

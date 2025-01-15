@@ -10,6 +10,7 @@ import com.dev.ebankbackend.entities.Customer;
 import com.dev.ebankbackend.entities.SavingAccount;
 import com.dev.ebankbackend.enums.AccountStatus;
 import com.dev.ebankbackend.enums.OperationType;
+import com.dev.ebankbackend.enums.UserRole;
 import com.dev.ebankbackend.exceptions.CustomerNotFoundException;
 import com.dev.ebankbackend.repositories.AccountOperationRepository;
 import com.dev.ebankbackend.repositories.BankAccountRepository;
@@ -19,6 +20,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Date;
 import java.util.List;
@@ -41,18 +43,21 @@ public class EBankBackendApplication {
         return new Date(year - 1900, 0, 1 + dayOfYear);
     }
 
-
-   // @Bean
+    @Bean
     CommandLineRunner start(CustomerRepository customerRepository,
                             BankAccountRepository bankAccountRepository,
                             AccountOperationRepository accountOperationRepository) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         return args -> {
-            Stream.of("Hamza","Ayman","ismail")
+            Stream.of("hamza","ayman","ismail")
                     .forEach(name -> {
                         Customer customer = new Customer();
                         customer.setName(name);
                         customer.setEmail(name.toLowerCase() + "@example.com");
-                        customer.setPassword(name.toLowerCase() + "123");
+                        customer.setRole(UserRole.valueOf("ADMIN"));
+                        String hashedPassword = passwordEncoder.encode(name.toLowerCase() + "123");
+                        customer.setPassword(hashedPassword);
+
                         customerRepository.save(customer);
                     });
 

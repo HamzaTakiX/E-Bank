@@ -22,13 +22,9 @@ export class AuthService {
     console.log('Attempting login for user:', username);
     const options = {
       headers: new HttpHeaders()
-        .set('Content-Type', 'application/x-www-form-urlencoded')
+        .set('Content-Type', 'application/json')
     };
-    const body = new URLSearchParams();
-    body.set('username', username);
-    body.set('password', password);
-    
-    return this.http.post("http://localhost:8085/auth/login", body.toString(), options);
+    return this.http.post("http://localhost:8085/auth/login", {email :username , password : password}, options);
   }
 
   loadProfile(data: any) {
@@ -41,7 +37,7 @@ export class AuthService {
     try {
       this.accessToken = data['access-token'];
       let decodedJwt: any = jwtDecode(this.accessToken);
-      
+
       if (!decodedJwt || !decodedJwt.sub || !decodedJwt.scope) {
         console.error('Invalid token structure:', decodedJwt);
         throw new Error('Invalid token structure');
@@ -50,7 +46,7 @@ export class AuthService {
       this.isAuthenticated = true;
       this.username = decodedJwt.sub;
       this.roles = decodedJwt.scope.split(' ');
-      
+
       console.log('Authentication successful:', {
         username: this.username,
         roles: this.roles,
