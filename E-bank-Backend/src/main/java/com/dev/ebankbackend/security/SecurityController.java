@@ -1,20 +1,13 @@
 package com.dev.ebankbackend.security;
 
-import com.dev.ebankbackend.services.CustomerServiceImpl;
-import com.nimbusds.jwt.JWTClaimsSet;
-import org.apache.catalina.User;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -24,44 +17,44 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/auth")
 public class SecurityController {
+
     @Autowired
     private AuthenticationManager authenticationManager;
+
     @Autowired
     private JwtEncoder jwtEncoder;
 
     @GetMapping("/profile")
-    public Authentication authentication(Authentication authentication) {
+    public org.apache.tomcat.util.net.openssl.ciphers.Authentication authentication(org.apache.tomcat.util.net.openssl.ciphers.Authentication authentication) {
         return authentication;
     }
-
     @PostMapping("/login")
-    public Map<String, String> login(@RequestParam String username, @RequestParam String password) {
+    public Map<String, String> login(@RequestParam String email, @RequestParam String password) {
         try {
-            org.springframework.security.core.Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(username, password)
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(email, password)
             );
-            
-            Instant instant = Instant.now();
-            String scope = authentication.getAuthorities().stream()
+            System.out.println(authentication);
+            Instant now = Instant.now();
+            String roles = authentication.getAuthorities().stream()
                     .map(GrantedAuthority::getAuthority)
                     .collect(Collectors.joining(" "));
-                    
-            JwtClaimsSet jwtClaimsSet = JwtClaimsSet.builder()
-                    .issuedAt(instant)
-                    .expiresAt(instant.plus(30, ChronoUnit.MINUTES))
-                    .subject(username)
-                    .claim("scope", scope)
+
+            JwtClaimsSet claims = JwtClaimsSet.builder()
+                    .issuedAt(now)
+                    .expiresAt(now.plus(30, ChronoUnit.MINUTES))
+                    .subject(authentication.getName())
+                    .claim("roles", roles)
                     .build();
-                    
-            JwtEncoderParameters jwtEncoderParameters = JwtEncoderParameters.from(
+
+            String token = jwtEncoder.encode(JwtEncoderParameters.from(
                     JwsHeader.with(MacAlgorithm.HS512).build(),
-                    jwtClaimsSet
-            );
-            
-            String jwt = jwtEncoder.encode(jwtEncoderParameters).getTokenValue();
-            return Map.of("access-token", jwt);
+                    claims
+            )).getTokenValue();
+
+            return Map.of("access-token", token);
         } catch (Exception e) {
-            throw new RuntimeException("Authentication failed: " + e.getMessage());
+            throw new RuntimeException("Invalid email or password", e);
         }
     }
 }

@@ -1,5 +1,7 @@
 package com.dev.ebankbackend.entities;
 
+import com.dev.ebankbackend.enums.AccountStatus;
+import com.dev.ebankbackend.enums.UserRole;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -16,6 +18,8 @@ public class Customer {
     private String name;
     private String email;
     private String password;
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
     @OneToMany(mappedBy = "customer")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<BankAccount> bankAccounts;
