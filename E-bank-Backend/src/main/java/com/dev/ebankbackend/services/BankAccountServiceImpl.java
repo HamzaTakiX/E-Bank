@@ -230,6 +230,11 @@ public class BankAccountServiceImpl implements BankAccountService {
     public void deleteCustomer(Long customerId){
         customerRepository.deleteById(customerId);
     }
+
+    @Override
+    public void deleteBankAccount(String bankAccountId){
+        bankAccountRepository.deleteById(bankAccountId);
+    }
     @Override
     public List<AccountOperationDTO> accountHistory(String accountId){
         List<AccountOperation> accountOperations = accountOperationRepository.findByBankAccountId(accountId);

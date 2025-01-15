@@ -22,6 +22,10 @@ public class BankAccountRestAPI {
     public BankAccountDTO getBankAccount(@PathVariable String accountId) throws BankAccountNotFoundException {
         return bankAccountService.getBankAccount(accountId);
     }
+    @DeleteMapping("/accounts/{accountId}")
+    public  void deleteAccount(@PathVariable String accountId) throws BankAccountNotFoundException {
+         bankAccountService.deleteBankAccount(accountId);
+    }
     @GetMapping("/accounts")
     public List<BankAccountDTO> listAccounts(){
         return bankAccountService.bankAccountList();

@@ -93,7 +93,7 @@ export class AccountsComponent implements OnInit {
     let operationType = this.operationFromGroup.value.operationType;
     let amount = this.operationFromGroup.value.amount;
     let description = this.operationFromGroup.value.description;
-    
+
     if(operationType == 'DEBIT') {
       this.accountService.debit(accountId, amount, description).subscribe({
         next : (data)=>{
@@ -187,19 +187,4 @@ export class AccountsComponent implements OnInit {
     this.operationFromGroup.patchValue({ operationType: type });
   }
 
-  openDeleteModal(operation: any) {
-    this.selectedOperation = operation;
-    this.showDeleteModal = true;
-  }
-
-  closeDeleteModal() {
-    this.showDeleteModal = false;
-    this.selectedOperation = null;
-  }
-
-  deleteOperation() {
-    // Here you would implement the actual delete functionality
-    console.log('Deleting operation:', this.selectedOperation);
-    this.closeDeleteModal();
-  }
 }
