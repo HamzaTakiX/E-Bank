@@ -42,25 +42,69 @@
     </div>
 
     <div class="loading-state" *ngIf="isLoading">
-      <div class="spinner-border text-primary" role="status">
-        <span class="visually-hidden">Loading...</span>
+      <div class="loading-content">
+        <div class="loading-animation">
+          <div class="loading-circle"></div>
+          <div class="loading-pulse"></div>
+          <div class="loading-icons">
+            <i class="bi bi-bank pulse-icon"></i>
+            <i class="bi bi-arrow-right pulse-icon"></i>
+            <i class="bi bi-file-text pulse-icon"></i>
+          </div>
+        </div>
+        <h3>Fetching Account Details</h3>
+        <p>Please wait while we retrieve your account information</p>
+        <div class="loading-progress">
+          <div class="progress-bar">
+            <div class="progress-fill"></div>
+          </div>
+          <div class="loading-steps">
+            <span class="step active">Connecting</span>
+            <span class="step">Fetching Data</span>
+            <span class="step">Processing</span>
+          </div>
+        </div>
       </div>
-      <p>Loading Account Details...</p>
     </div>
 
     <div class="empty-state" *ngIf="isInitialState && !isLoading">
       <div class="empty-state-content">
-        <div class="empty-state-icons">
-          <i class="bi bi-bank2"></i>
-          <i class="bi bi-arrow-right"></i>
-          <i class="bi bi-file-earmark-text"></i>
+        <div class="empty-state-illustration">
+          <div class="icon-circle">
+            <i class="bi bi-bank2"></i>
+          </div>
+          <div class="icon-circle">
+            <i class="bi bi-search"></i>
+          </div>
+          <div class="icon-circle">
+            <i class="bi bi-file-earmark-text"></i>
+          </div>
+          <svg class="connecting-lines" width="200" height="50">
+            <line x1="70" y1="25" x2="130" y2="25" stroke="#4569D3" stroke-width="2" stroke-dasharray="5,5"/>
+          </svg>
         </div>
-        <h3>Account Information Center</h3>
-        <p>Enter an account ID to view:</p>
-        <ul class="feature-list">
-          <li><i class="bi bi-cash-coin"></i> Account Balance</li>
-          <li><i class="bi bi-clock-history"></i> Transaction History</li>
-        </ul>
+        <h3>Welcome to Account Information Center</h3>
+        <p>Enter an account ID to access detailed information and manage transactions</p>
+        <div class="feature-cards">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="bi bi-cash-coin"></i>
+            </div>
+            <span>Balance Details</span>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="bi bi-clock-history"></i>
+            </div>
+            <span>Transaction History</span>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="bi bi-graph-up-arrow"></i>
+            </div>
+            <span>Account Analytics</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -94,9 +138,8 @@
             <i class="bi bi-person-badge"></i>
             <div class="info-content single-line">
               <span class="label">Account ID:</span>
-              <span class="value" [title]="accountDetails.accountId" (click)="copyToClipboard(accountDetails.accountId)">
+              <span class="badge account-badge" [title]="accountDetails.accountId" (click)="copyToClipboard(accountDetails.accountId)">
                 {{accountDetails.accountId}}
-                <i class="bi bi-info-circle-fill tooltip-icon" title="Click to copy"></i>
               </span>
             </div>
           </div>
@@ -104,13 +147,15 @@
             <i class="bi bi-wallet2"></i>
             <div class="info-content single-line">
               <span class="label">Balance:</span>
-              <span class="value">{{accountDetails.balance | number : '1.2-2'}} DH</span>
+              <span class="badge balance-badge">
+                {{accountDetails.balance | number:'1.2-2'}} $ 
+              </span>
             </div>
           </div>
         </div>
       </div>
 
-      <div class="transactions-section" *ngIf="accountDetails$ | async as accountDetails">
+      <div class="transactions-section" *ngIf="accountDetails$ | async as accountDetails" id="transactionsTable">
         <div class="section-header">
           <div class="header-icon">
             <i class="bi bi-clock-history"></i>
@@ -124,7 +169,7 @@
           </div>
         </div>
 
-        <div class="search-filter-container">
+        <div class="search-filter-container" *ngIf="accountDetails.accountOperationDTOS.length > 0">
           <div class="search-box">
             <i class="bi bi-search"></i>
             <input type="text" placeholder="Search transactions..." [(ngModel)]="searchTerm" name="searchTerm" class="search-input">
@@ -146,105 +191,130 @@
           </div>
         </div>
 
-        <div class="table-responsive">
+        <div class="no-transactions-state" *ngIf="accountDetails.accountOperationDTOS.length === 0">
+          <div class="no-transactions-content">
+            <div class="no-transactions-icon">
+              <i class="bi bi-clock-history"></i>
+              <i class="bi bi-x-circle overlay-icon"></i>
+            </div>
+            <h3>No Transactions Yet</h3>
+            <p>This account hasn't had any transactions yet. New transactions will appear here when they occur.</p>
+            <div class="transaction-types">
+              <div class="type-item">
+                <i class="bi bi-arrow-down-circle text-danger"></i>
+                <span>Debits</span>
+              </div>
+              <div class="type-item">
+                <i class="bi bi-arrow-up-circle text-success"></i>
+                <span>Credits</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-responsive" *ngIf="accountDetails.accountOperationDTOS.length > 0">
           <table class="table">
             <thead>
               <tr>
-                <th>
+                <th style="width: 15%">
                   <div class="th-content">
                     <i class="bi bi-hash"></i>
-                    <span>Transaction ID</span>
+                    <span>ID</span>
                   </div>
                 </th>
-                <th>
+                <th style="width: 25%">
                   <div class="th-content">
                     <i class="bi bi-calendar-event"></i>
                     <span>Date & Time</span>
                   </div>
                 </th>
-                <th>
+                <th style="width: 20%">
                   <div class="th-content">
                     <i class="bi bi-tag"></i>
                     <span>Type</span>
                   </div>
                 </th>
-                <th class="text-end">
-                  <div class="th-content">
+                <th style="width: 25%" class="text-end">
+                  <div class="th-content justify-content-end">
                     <i class="bi bi-currency-dollar"></i>
                     <span>Amount</span>
+                  </div>
+                </th>
+                <th style="width: 15%" class="text-center">
+                  <div class="th-content justify-content-center">
+                    <i class="bi bi-trash"></i>
+                    <span>Delete</span>
                   </div>
                 </th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngIf="!isInitialState && filteredOperations.length === 0">
-                <td colspan="4">
-                  <div class="search-filter-empty-state">
-                    <div class="empty-state-icon">
-                      <i class="bi" [ngClass]="{
-                        'bi-search': searchTerm,
-                        'bi-filter': !searchTerm && selectedFilter !== 'all'
-                      }"></i>
-                    </div>
-                    <h4 class="empty-state-title">
-                      {{searchTerm ? 'No matching transactions found' :
-                        selectedFilter !== 'all' ? 'No ' + selectedFilter + ' transactions found' :
-                        'No transactions available'}}
-                    </h4>
-                    <p class="empty-state-text">
-                      {{searchTerm ? 'Try adjusting your search term or clear filters to see more results' :
-                        selectedFilter !== 'all' ? 'Try selecting a different filter' :
-                        'There are no transactions to display at this time'}}
-                    </p>
-                    <button *ngIf="searchTerm || selectedFilter !== 'all'"
-                            class="btn btn-outline-primary"
-                            (click)="clearFilters()">
-                      <i class="bi bi-arrow-counterclockwise"></i>
-                      Clear Filters
-                    </button>
-                  </div>
-                </td>
-              </tr>
               <tr *ngFor="let op of filteredOperations">
                 <td><span class="operation-id">#{{op.id}}</span></td>
                 <td>
-                  <div class="date-badge">
+                  <span class="date-badge">
                     <i class="bi bi-calendar3"></i>
-                    <div class="date-content">
-                      <span class="date">{{op.operationDate | date : 'MMM dd, yyyy'}}</span>
-                      <span class="time">{{op.operationDate | date : 'HH:mm'}}</span>
-                    </div>
-                  </div>
+                    {{op.operationDate | date:'MMM dd, yyyy'}} at {{op.operationDate | date:'HH:mm'}}
+                  </span>
                 </td>
                 <td>
                   <span class="operation-type" [ngClass]="op.type.toLowerCase()">
+                    <i class="bi" [ngClass]="op.type === 'DEBIT' ? 'bi-arrow-down-circle' : 'bi-arrow-up-circle'"></i>
                     {{op.type}}
                   </span>
                 </td>
                 <td class="text-end">
-                  <span class="amount-badge" [ngClass]="{'credit': op.type === 'CREDIT', 'debit': op.type === 'DEBIT'}">
-                    <i class="bi" [ngClass]="{'bi-arrow-down-circle-fill': op.type === 'CREDIT', 'bi-arrow-up-circle-fill': op.type === 'DEBIT'}"></i>
-                    <span class="amount-text">{{op.type === 'CREDIT' ? '+' : '-'}}{{op.amount | number : '1.2-2'}} DH</span>
+                  <span class="amount-badge" [ngClass]="op.type.toLowerCase()">
+                    <i class="bi" [ngClass]="op.type === 'DEBIT' ? 'bi-arrow-down-circle' : 'bi-arrow-up-circle'"></i>
+                    {{op.type === 'DEBIT' ? '-' : '+'}}{{op.amount | number:'1.2-2'}} $
                   </span>
+                </td>
+                <td class="text-center">
+                  <button class="btn-delete" title="Delete transaction" (click)="openDeleteModal(op)">
+                    <i class="bi bi-trash"></i>
+                  </button>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
-        <div class="pagination-container">
-          <nav class="nav-pills">
-            <button class="btn" [disabled]="currentPage === 0" (click)="gotoPage(currentPage-1)">
-              <i class="bi bi-chevron-left"></i>
-            </button>
-            <button class="btn" *ngFor="let page of [].constructor(accountDetails.totalPages); let i=index"
-                    [class.active]="i === currentPage"
-                    (click)="gotoPage(i)">
-              {{i + 1}}
-            </button>
-            <button class="btn" [disabled]="currentPage === accountDetails.totalPages-1" (click)="gotoPage(currentPage+1)">
-              <i class="bi bi-chevron-right"></i>
-            </button>
-          </nav>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" *ngIf="showDeleteModal" (click)="closeDeleteModal()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          <div class="modal-icon">
+            <i class="bi bi-exclamation-triangle"></i>
+          </div>
+          <h3>Confirm Delete</h3>
+          <button class="close-btn" (click)="closeDeleteModal()">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Are you sure you want to delete this transaction?</p>
+          <div class="transaction-details" *ngIf="selectedOperation">
+            <div class="detail-item">
+              <span class="label">Transaction ID:</span>
+              <span class="value">#{{selectedOperation.id}}</span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Amount:</span>
+              <span class="value" [ngClass]="selectedOperation.type.toLowerCase()">
+                {{selectedOperation.type === 'DEBIT' ? '-' : '+'}}{{selectedOperation.amount | number:'1.2-2'}} $
+              </span>
+            </div>
+            <div class="detail-item">
+              <span class="label">Date:</span>
+              <span class="value">{{selectedOperation.operationDate | date:'MMM dd, yyyy HH:mm'}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="closeDeleteModal()">Cancel</button>
+          <button class="btn btn-danger" (click)="deleteOperation()">Delete</button>
         </div>
       </div>
     </div>

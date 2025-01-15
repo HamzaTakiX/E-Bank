@@ -215,9 +215,21 @@
           </tbody>
         </table>
         
-        <div *ngIf="!isLoading && filteredTransactions.length === 0" class="text-center py-5">
-          <i class="bi bi-search fs-1 text-muted"></i>
-          <p class="mt-3">No transactions found matching your criteria</p>
+        <div *ngIf="!isLoading && filteredTransactions.length === 0" class="no-results-container">
+          <div class="no-results-content">
+            <i class="bi bi-search fs-1 text-primary mb-3"></i>
+            <h4 class="text-dark mb-2">No Transactions Found</h4>
+            <p class="text-muted mb-3">We couldn't find any transactions matching your search criteria</p>
+            <div class="suggestions">
+              <p class="suggestion-title">Try:</p>
+              <ul class="suggestion-list">
+                <li>Checking for spelling errors</li>
+                <li>Using different search terms</li>
+                <li>Adjusting your date range</li>
+                <li>Clearing filters to see all transactions</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
 

@@ -10,7 +10,7 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
+      <ul class="navbar-nav ms-auto d-flex align-items-center">
         <li class="nav-item">
           <a class="nav-link text-white position-relative px-4" routerLink="/admin/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}"
              style="transition: all 0.3s;"
@@ -56,18 +56,39 @@
             <span>ChatBot</span>
           </a>
         </li>
-        <span *ngIf="authService.isAuthenticated">
-          <li class="nav-item ">
-            <a class="nav-item text-white">
-              {{this.authService.username}}
-            </a>
-          </li>
-          <li class="nav-item">
-            <button (click)="handleLogout()" class="btn btn-success">Logout</button>
-          </li>
-        </span>
+        <li class="nav-item dropdown me-17">
+          <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <div class="avatar-container d-flex align-items-center">
+              <div class="user-info-container">
+                <i class="bi bi-person-circle fs-4 me-2"></i>
+                <div class="user-info">
+                  <span class="username">{{authService.username}}</span>
+                  <span class="role-badge">Admin</span>
+                </div>
+              </div>
+              <i class="bi bi-caret-down-fill dropdown-arrow"></i>
+            </div>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+            <li class="dropdown-header">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-person-circle fs-5 me-2"></i>
+                <div>
+                  <div class="header-username">{{authService.username}}</div>
+                  <div class="header-role">Administrator</div>
+                </div>
+              </div>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href="#" (click)="handleLogout()">
+                <i class="bi bi-box-arrow-right me-2"></i>
+                <span>Sign Out</span>
+              </a>
+            </li>
+          </ul>
+        </li>
       </ul>
     </div>
   </div>
  </nav>
-

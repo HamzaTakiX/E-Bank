@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {FormBuilder, FormGroup} from "@angular/forms";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../services/auth.service";
-import {Router} from "@angular/router";
+import {Router, ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'app-login',
@@ -10,28 +10,67 @@ import {Router} from "@angular/router";
 })
 export class LoginComponent implements OnInit {
   formLogin! : FormGroup;
-  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) { }
+  errorMessage: string = '';
+  isLoading: boolean = false;
+
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router, private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    this.formLogin=this.fb.group({
-      username : this.fb.control(""),
-      password : this.fb.control("")
-    })
+    this.formLogin = this.fb.group({
+      username: ['', [Validators.required]],
+      password: ['', [Validators.required]]
+    });
   }
 
-  handleLogin(){
+  handleLogin() {
+    if (this.formLogin.invalid) {
+      this.errorMessage = 'Please fill in all fields correctly';
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMessage = '';
     let username = this.formLogin.value.username;
-    let pwd = this.formLogin.value.password;
-    this.authService.login(username,pwd).subscribe({
-      next: data => {
-        const role = this.authService.loadProfile(data);
-        if(role.includes('ADMIN')) this.router.navigate(['/admin/home']);
-        else this.router.navigate(['/home']);
+    let password = this.formLogin.value.password;
+    
+    this.authService.login(username, password).subscribe({
+      next: (data: any) => {
+        try {
+          const roles = this.authService.loadProfile(data);
+          if (roles && roles.includes('ADMIN')) {
+            // Set flag for welcome message
+            localStorage.setItem('justLoggedIn', 'true');
+            const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/admin/home';
+            this.router.navigateByUrl(returnUrl);
+          } else {
+            this.errorMessage = "You don't have permission to access this application.";
+            this.isLoading = false;
+          }
+        } catch (error) {
+          console.error('Error processing login response:', error);
+          this.errorMessage = "Invalid response from server";
+          this.isLoading = false;
+        }
       },
-      error: err => {
-        console.log(err);
+      error: (err) => {
+        console.error('Login error:', err);
+        this.errorMessage = err.error?.message || "Authentication failed. Please check your credentials.";
+        this.isLoading = false;
+      },
+      complete: () => {
+        if (this.errorMessage) {
+          this.isLoading = false;
+        }
       }
-    })
+    });
   }
 
+  // Helper methods for template
+  get usernameControl() {
+    return this.formLogin.get('username');
+  }
+
+  get passwordControl() {
+    return this.formLogin.get('password');
+  }
 }

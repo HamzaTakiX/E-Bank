@@ -63,24 +63,31 @@ export class CustomersComponent implements OnInit {
 
   confirmDelete() {
     if (this.customerToDelete) {
-      this.customerService.deleteCustomer(this.customerToDelete.id).subscribe({
+      this.customerService.deleteCustomer(this.customerToDelete.id).pipe(
+        catchError(err => {
+          this.errorMessage = `Failed to delete customer: ${err.message}`;
+          this.showDeleteModal = false;
+          return throwError(() => err);
+        })
+      ).subscribe({
         next: () => {
+          // Update customers list locally
+          const currentCustomers = this.customers$.value;
+          const updatedCustomers = currentCustomers.filter(c => c.id !== this.customerToDelete?.id);
+          this.customers$.next(updatedCustomers);
+
+          // Show success message
           this.showSuccessMessage = true;
           this.successMessage = `Customer ${this.customerToDelete?.name} has been successfully deleted`;
           this.showDeleteModal = false;
           this.customerToDelete = null;
-
-          // Refresh the list after a short delay
+          
+          // Hide success message after a delay
           setTimeout(() => {
-            this.handleSearchCustomers();
-            // Hide success message after list refresh
-            setTimeout(() => {
-              this.showSuccessMessage = false;
-            }, 1500);
-          }, 1000);
+            this.showSuccessMessage = false;
+          }, 3000);
         },
-        error: err => {
-          console.error(err);
+        error: () => {
           this.showDeleteModal = false;
         }
       });

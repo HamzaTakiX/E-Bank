@@ -1,0 +1,84 @@
+.welcome-section {
+  padding: 1rem 0;
+}
+
+.welcome-card {
+  background: linear-gradient(135deg, #1565d8 0%, #0f4c9e 100%);
+  border-radius: 16px;
+  padding: 2rem;
+  color: white;
+  box-shadow: 0 4px 20px rgba(21, 101, 216, 0.1);
+}
+
+.welcome-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.welcome-subtitle {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin: 0;
+}
+
+.notification-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  animation: slideIn 0.5s ease-out;
+  pointer-events: none;
+}
+
+.welcome-notification {
+  background: linear-gradient(135deg, #1565d8 0%, #0f4c9e 100%);
+  color: white;
+  padding: 20px 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  min-width: 300px;
+  position: relative;
+  z-index: 10000;
+}
+
+.welcome-notification h3 {
+  margin: 0 0 5px 0;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.welcome-notification p {
+  margin: 0;
+  opacity: 0.9;
+  font-size: 0.9rem;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+.notification-container.hiding {
+  animation: slideOut 0.5s ease-in forwards;
+}

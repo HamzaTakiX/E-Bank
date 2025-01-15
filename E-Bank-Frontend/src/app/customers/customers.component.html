@@ -38,20 +38,20 @@
               </div>
             </form>
           </div>
-          <a routerLink="/new-customer" class="btn btn-success add-customer-btn">
+          <a routerLink="/admin/new-customer" class="btn btn-success add-customer-btn">
             <i class="bi bi-plus-circle-fill"></i>
             <span>Add Customer</span>
           </a>
         </div>
       </div>
       <div class="card-body">
-        <ng-container *ngIf="!isLoading; else loading">
-          <div *ngIf="showSuccessMessage" class="success-message">
-            <i class="bi bi-check-circle"></i>
-            <span>{{successMessage}}</span>
-          </div>
+        <div *ngIf="showSuccessMessage" class="success-message">
+          <i class="bi bi-check-circle"></i>
+          <span>{{successMessage}}</span>
+        </div>
 
-          <ng-container *ngIf="(customers$ | async)?.length; else noResults">
+        <ng-container *ngIf="customers$ | async as customers">
+          <ng-container *ngIf="customers.length; else noResults">
             <table class="table">
               <thead>
               <tr>
@@ -82,7 +82,7 @@
               </tr>
               </thead>
               <tbody>
-              <tr *ngFor="let c of customers$ | async">
+              <tr *ngFor="let c of customers">
                 <td class="text-center">
                   <span class="id-badge">
                     <i class="bi bi-hash"></i>
@@ -123,15 +123,6 @@
           </ng-container>
         </ng-container>
 
-        <ng-template #loading>
-          <div class="loading-container">
-            <div class="spinner-container">
-              <div class="spinner-ring"></div>
-              <div class="loading-text">Loading Customers...</div>
-            </div>
-          </div>
-        </ng-template>
-
         <ng-template #noResults>
           <div class="not-found-state">
             <div class="not-found-content">
@@ -167,4 +158,32 @@
       </div>
     </ng-template>
   </ng-template>
+</div>
+<!-- Delete Confirmation Modal -->
+<div class="modal" *ngIf="showDeleteModal">
+  <div class="modal-overlay" (click)="cancelDelete()"></div>
+  <div class="modal-container">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="modal-icon">
+          <i class="bi bi-exclamation-triangle"></i>
+        </div>
+        <h3>Delete Customer</h3>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete customer <strong>{{customerToDelete?.name}}</strong>?</p>
+        <p class="warning-text">This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="cancelDelete()">
+          <i class="bi bi-x"></i>
+          Cancel
+        </button>
+        <button class="btn btn-danger" (click)="confirmDelete()">
+          <i class="bi bi-trash3"></i>
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

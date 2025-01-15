@@ -2,6 +2,7 @@ package com.dev.ebankbackend.services;
 
 import com.dev.ebankbackend.dtos.*;
 import com.dev.ebankbackend.entities.*;
+import com.dev.ebankbackend.enums.AccountStatus;
 import com.dev.ebankbackend.enums.OperationType;
 import com.dev.ebankbackend.exceptions.BalanceNotSufficientException;
 import com.dev.ebankbackend.exceptions.BankAccountNotFoundException;
@@ -49,6 +50,7 @@ public class BankAccountServiceImpl implements BankAccountService {
         currentAccount.setBalance(initialBalance);
         currentAccount.setOverDraft(overDraft);
         currentAccount.setCustomer(customer);
+        currentAccount.setStatus(AccountStatus.CREATED);
         CurrentAccount savedBankAccount = bankAccountRepository.save(currentAccount);
         return dtoMapper.fromCurrentBankAccount(savedBankAccount);
     }
@@ -64,6 +66,7 @@ public class BankAccountServiceImpl implements BankAccountService {
         savingAccount.setBalance(initialBalance);
         savingAccount.setInterestRate(interestRate);
         savingAccount.setCustomer(customer);
+        savingAccount.setStatus(AccountStatus.CREATED);
         SavingAccount savedBankAccount = bankAccountRepository.save(savingAccount);
         return dtoMapper.fromSavingBankAccount(savedBankAccount);
     }

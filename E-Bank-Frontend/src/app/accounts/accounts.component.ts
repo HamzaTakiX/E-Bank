@@ -25,6 +25,8 @@ export class AccountsComponent implements OnInit {
   accountDetails$ = this.accountDetailsSubject.asObservable();
   accountId: string = '';
   notification: { type: 'success' | 'error', message: string } | null = null;
+  showDeleteModal: boolean = false;
+  selectedOperation: any = null;
 
   constructor(private fb : FormBuilder, private accountService : AccountsService, private route: ActivatedRoute, public authService: AuthService) { }
 
@@ -77,34 +79,45 @@ export class AccountsComponent implements OnInit {
     this.loadAccountData(page);
   }
 
+  private scrollToTransactions() {
+    setTimeout(() => {
+      const element = document.getElementById('transactionsTable');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+  }
+
   handleAccountOperation() {
     let accountId : string = this.accountFormGroup.value.accountId;
     let operationType = this.operationFromGroup.value.operationType;
-    let amount : number = this.operationFromGroup.value.amount;
-    let description : string = this.operationFromGroup.value.description;
-
+    let amount = this.operationFromGroup.value.amount;
+    let description = this.operationFromGroup.value.description;
+    
     if(operationType == 'DEBIT') {
       this.accountService.debit(accountId, amount, description).subscribe({
         next : (data)=>{
-          this.loadAccountData(this.currentPage);
+          this.loadAccountData();
           this.operationFromGroup.reset();
           this.operationFromGroup.patchValue({ operationType: '' });
           this.showNotification('success', 'Debit operation completed successfully');
+          this.scrollToTransactions();
         },
-        error : (err)=>{
-          this.showNotification('error', err.message);
+        error : err => {
+          this.showNotification('error', err.error.message);
         }
       });
     } else if(operationType == 'CREDIT') {
       this.accountService.credit(accountId, amount, description).subscribe({
         next : (data)=>{
-          this.loadAccountData(this.currentPage);
+          this.loadAccountData();
           this.operationFromGroup.reset();
           this.operationFromGroup.patchValue({ operationType: '' });
           this.showNotification('success', 'Credit operation completed successfully');
+          this.scrollToTransactions();
         },
-        error : (err)=>{
-          this.showNotification('error', err.message);
+        error : err => {
+          this.showNotification('error', err.error.message);
         }
       });
     }
@@ -172,5 +185,21 @@ export class AccountsComponent implements OnInit {
 
   selectOperationType(type: string) {
     this.operationFromGroup.patchValue({ operationType: type });
+  }
+
+  openDeleteModal(operation: any) {
+    this.selectedOperation = operation;
+    this.showDeleteModal = true;
+  }
+
+  closeDeleteModal() {
+    this.showDeleteModal = false;
+    this.selectedOperation = null;
+  }
+
+  deleteOperation() {
+    // Here you would implement the actual delete functionality
+    console.log('Deleting operation:', this.selectedOperation);
+    this.closeDeleteModal();
   }
 }
