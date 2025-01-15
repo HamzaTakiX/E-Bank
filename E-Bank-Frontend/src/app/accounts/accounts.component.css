@@ -1574,20 +1574,10 @@ h3 {
   margin-bottom: 1.5rem;
 }
 
-.no-transactions-icon i.bi-clock-history {
+.no-transactions-icon i {
   font-size: 4rem;
-  color: #e0e0e0;
-}
-
-.no-transactions-icon i.overlay-icon {
-  position: absolute;
-  bottom: -5px;
-  right: -5px;
-  font-size: 1.5rem;
-  color: #6c757d;
-  background: white;
-  border-radius: 50%;
-  padding: 2px;
+  line-height: 1;
+  opacity: 0.9;
 }
 
 .no-transactions-state h3 {
@@ -1849,4 +1839,112 @@ h3 {
     transform: translateY(0);
     opacity: 1;
   }
+}
+
+.no-filtered-operations {
+  padding: 3rem 1rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.no-operations-content {
+  max-width: 400px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.no-operations-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.no-operations-icon i {
+  font-size: 4rem;
+  line-height: 1;
+  opacity: 0.9;
+}
+
+.no-operations-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  text-align: center;
+}
+
+.no-operations-text h3 {
+  color: #2c3e50;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.search-message,
+.info-message {
+  color: #64748b;
+  font-size: 1rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.search-message i,
+.info-message i {
+  font-size: 1.1rem;
+  opacity: 0.8;
+}
+
+.clear-filters-btn {
+  margin-top: 0.5rem;
+  padding: 0.6rem 1.5rem;
+  border-radius: 20px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid #e2e8f0;
+  background: white;
+  color: #4b5563;
+  transition: all 0.2s ease;
+}
+
+.clear-filters-btn:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.clear-filters-btn i {
+  font-size: 1.1rem;
+  opacity: 0.8;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.no-filtered-operations {
+  animation: fadeInUp 0.3s ease-out;
 }

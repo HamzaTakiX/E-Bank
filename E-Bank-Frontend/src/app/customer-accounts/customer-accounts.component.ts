@@ -36,7 +36,7 @@ export class CustomerAccountsComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private accountService: AccountService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.customerId = this.route.snapshot.params['id'];
@@ -134,9 +134,8 @@ export class CustomerAccountsComponent implements OnInit {
     this.currentPage = 0;
   }
 
-  showAccountTypeModal() {
+  openAccountTypeModal() {
     this.showTypeModal = true;
-    this.selectedType = null;
   }
 
   closeAccountTypeModal() {

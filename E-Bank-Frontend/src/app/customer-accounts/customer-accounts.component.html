@@ -50,8 +50,13 @@
         <i class="bi bi-wallet2"></i>
         <span>Accounts Overview</span>
       </h3>
-      <div class="accounts-count" *ngIf="accounts$ | async as accounts">
-        {{accounts.length}} Account(s)
+      <div class="d-flex align-items-center">
+        <button class="btn btn-primary me-2 px-2" (click)="openAccountTypeModal()">
+          <i class="bi bi-plus-circle me-1"></i>Add Account
+        </button>
+        <div class="accounts-count" *ngIf="accounts$ | async as accounts">
+          {{accounts.length}} Account(s)
+        </div>
       </div>
     </div>
 
@@ -122,7 +127,7 @@
         <div class="empty-state-content">
           <h4>No Accounts Found</h4>
           <p>This customer doesn't have any accounts yet.</p>
-          <button class="add-account-btn" (click)="showAccountTypeModal()">
+          <button class="add-account-btn" (click)="openAccountTypeModal()">
             <span class="icon-wrapper">
               <i class="bi bi-plus-circle-fill"></i>
             </span>
@@ -184,10 +189,6 @@
         <div class="warning-text">
           <i class="bi bi-exclamation-triangle"></i>
           <span>This action cannot be undone. The account and all its operations will be permanently deleted.</span>
-        </div>
-        <div class="error-text" *ngIf="deleteError">
-          <i class="bi bi-x-circle"></i>
-          <span>{{deleteError}}</span>
         </div>
       </div>
       <div class="modal-footer">
