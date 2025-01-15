@@ -50,5 +50,9 @@ public class CustomerRestController {
         bankAccountService.deleteCustomer(id);
     }
 
-
+    @PreAuthorize("hasAuthority('SCOPE_ADMIN')")
+    @DeleteMapping("/bankAccount/{id}")
+    public void deleteBankAccount(@PathVariable String id){
+        bankAccountService.deleteBankAccount(id);
+    }
 }

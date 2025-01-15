@@ -33,6 +33,7 @@ public interface BankAccountService {
     CustomerDTO updateCustomer(CustomerDTO customerDTO);
 
     void deleteCustomer(Long customerId);
+    void deleteBankAccount(String bankAccountId);
 
     List<AccountOperationDTO> accountHistory(String accountId);
 
