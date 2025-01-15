@@ -10,7 +10,7 @@ E-Bank is a comprehensive banking management application designed to handle cust
 - Manage customers and bank accounts.
 - Perform debit, credit, and transfer operations.
 - Support for saving and current accounts.
-- Integration with PostgreSQL database.
+- Integration with MYsql database.
 - Secure API endpoints with Spring Security and JWT.
 
 ### Frontend:
