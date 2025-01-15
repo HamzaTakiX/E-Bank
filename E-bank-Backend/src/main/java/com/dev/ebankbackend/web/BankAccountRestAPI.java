@@ -1,13 +1,12 @@
 package com.dev.ebankbackend.web;
 
-
 import com.dev.ebankbackend.dtos.*;
 import com.dev.ebankbackend.exceptions.BalanceNotSufficientException;
 import com.dev.ebankbackend.exceptions.BankAccountNotFoundException;
+import com.dev.ebankbackend.exceptions.CustomerNotFoundException;
 import com.dev.ebankbackend.services.BankAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -61,5 +60,21 @@ public class BankAccountRestAPI {
                 transferRequestDTO.getAccountSource(),
                 transferRequestDTO.getAccountDestination(),
                 transferRequestDTO.getAmount());
+    }
+
+    @PostMapping("/accounts/current")
+    public CurrentBankAccountDTO saveCurrentBankAccount(
+            @RequestParam(defaultValue = "0") double initialBalance,
+            @RequestParam(defaultValue = "0") double overDraft,
+            @RequestParam Long customerId) throws CustomerNotFoundException {
+        return bankAccountService.saveCurrentBankAccount(initialBalance, overDraft, customerId);
+    }
+
+    @PostMapping("/accounts/saving")
+    public SavingBankAccountDTO saveSavingBankAccount(
+            @RequestParam(defaultValue = "0") double initialBalance,
+            @RequestParam(defaultValue = "0") double interestRate,
+            @RequestParam Long customerId) throws CustomerNotFoundException {
+        return bankAccountService.saveSavingBankAccount(initialBalance, interestRate, customerId);
     }
 }

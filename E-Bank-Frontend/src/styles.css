@@ -1,2 +1,21 @@
 /* You can add global styles to this file, and also import other style files */
 @import "~bootstrap-icons/font/bootstrap-icons.css";
+
+/* Hide scrollbar for all elements */
+* {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/* Ensure the body takes full height and handles overflow properly */
+html, body {
+  height: 100%;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+}

@@ -1,17 +1,39 @@
-<div class="p-3">
-  <div class="card">
-    <div class="card-header">Authetication</div>
-    <div class="card-body">
+<!-- Main container -->
+<div class="main-con">
+  <!-- Content container -->
+  <div class="ct-con">
+    <!-- Image container -->
+    <div class="im-con">
+      <img src="assets/img/banking illustration.png" alt="banking illustration" class="ima">
+    </div>
+    <!-- Form container -->
+    <div class="form-el">
+      <h1>Welcome Back!</h1>
       <form [formGroup]="formLogin" (ngSubmit)="handleLogin()">
-        <div class="mb-3">
-          <label class="form-label">Username</label>
-          <input type="text" class="form-control" formControlName="username">
+        <div class="inp-con">
+          <label class="lab">User ID</label>
+          <input type="text" class="inp" [class.error-input]="usernameControl?.invalid && usernameControl?.touched" 
+                 placeholder="Enter User ID" formControlName="username">
+          <span class="error-msg" *ngIf="usernameControl?.invalid && usernameControl?.touched">
+            User ID is required
+          </span>
         </div>
-        <div class="mb-3">
-          <label class="form-label">Password</label>
-          <input type="password" class="form-control" formControlName="password">
+        <div class="inp-con">
+          <label class="lab">PIN</label>
+          <input type="password" class="inp" [class.error-input]="passwordControl?.invalid && passwordControl?.touched" 
+                 placeholder="Enter PIN" formControlName="password">
+          <span class="error-msg" *ngIf="passwordControl?.invalid && passwordControl?.touched">
+            PIN is required
+          </span>
         </div>
-        <button class="btn btn-success">Login</button>
+        <!-- General error message -->
+        <div class="error-container" *ngIf="errorMessage">
+          <span class="error-msg">{{ errorMessage }}</span>
+        </div>
+        <button type="submit" class="but" [disabled]="isLoading">
+          <span *ngIf="!isLoading">Login</span>
+          <span *ngIf="isLoading">Logging in...</span>
+        </button>
       </form>
     </div>
   </div>

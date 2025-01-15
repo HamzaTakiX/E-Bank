@@ -14,26 +14,78 @@ export class AuthService {
   accessToken!: any;
 
   constructor(private http:HttpClient,private router : Router) {
-
+    console.log('AuthService initialized');
+    this.loadJwtTokenFromLocalStorage();
   }
+
   public login(username : string, password : string){
-    let options = {
-      headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded'),
-    }
-    let params = new HttpParams()
-      .set('username', username).set('password', password);
-    return this.http.post("http://localhost:8085/auth/login", params, options)
+    console.log('Attempting login for user:', username);
+    const options = {
+      headers: new HttpHeaders()
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+    };
+    const body = new URLSearchParams();
+    body.set('username', username);
+    body.set('password', password);
+    
+    return this.http.post("http://localhost:8085/auth/login", body.toString(), options);
   }
 
   loadProfile(data: any) {
-    this.isAuthenticated = true;
-    this.accessToken = data['access-token'];
-    let decodedJwt:any = jwtDecode(this.accessToken);
-    this.username = decodedJwt.sub;
-    this.roles = decodedJwt.scope;
-    console.log(this.roles);
-    window.localStorage.setItem('jwt-token', this.accessToken);
-    return this.roles;
+    console.log('Loading profile with data:', data);
+    if (!data || !data['access-token']) {
+      console.error('Invalid login response:', data);
+      throw new Error('Invalid login response');
+    }
+
+    try {
+      this.accessToken = data['access-token'];
+      let decodedJwt: any = jwtDecode(this.accessToken);
+      
+      if (!decodedJwt || !decodedJwt.sub || !decodedJwt.scope) {
+        console.error('Invalid token structure:', decodedJwt);
+        throw new Error('Invalid token structure');
+      }
+
+      this.isAuthenticated = true;
+      this.username = decodedJwt.sub;
+      this.roles = decodedJwt.scope.split(' ');
+      
+      console.log('Authentication successful:', {
+        username: this.username,
+        roles: this.roles,
+        isAuthenticated: this.isAuthenticated
+      });
+
+      window.localStorage.setItem('jwt-token', this.accessToken);
+      return this.roles;
+    } catch (error) {
+      console.error('Error processing token:', error);
+      this.logout();
+      throw error;
+    }
+  }
+
+  loadJwtTokenFromLocalStorage() {
+    const token = window.localStorage.getItem('jwt-token');
+    if (token) {
+      try {
+        console.log('Found token in localStorage');
+        this.accessToken = token;
+        let decodedJwt: any = jwtDecode(this.accessToken);
+        this.isAuthenticated = true;
+        this.username = decodedJwt.sub;
+        this.roles = decodedJwt.scope.split(' ');
+        console.log('Successfully loaded token from localStorage');
+        return true;
+      } catch (error) {
+        console.error('Error loading token from localStorage:', error);
+        this.logout();
+        return false;
+      }
+    }
+    console.log('No token found in localStorage');
+    return false;
   }
 
   logout() {
@@ -45,11 +97,11 @@ export class AuthService {
     this.router.navigateByUrl("/login");
   }
 
-  loadJwtTokenFromLocalStorage() {
-    let token = window.localStorage.getItem('jwt-token');
-    if (token) {
-      this.loadProfile({"access-token": token});;
-      this.router.navigateByUrl("/admin/dashboard");
-    }
+  hasRole(role: string): boolean {
+    console.log('Checking for role:', role);
+    console.log('Current roles:', this.roles);
+    const hasRole = this.roles && Array.isArray(this.roles) && this.roles.includes(role);
+    console.log('Has role result:', hasRole);
+    return hasRole;
   }
 }

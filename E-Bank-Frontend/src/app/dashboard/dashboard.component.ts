@@ -13,6 +13,7 @@ import {
   DoughnutController,
   ArcElement,
 } from 'chart.js';
+import {AuthService} from "../services/auth.service";
 
 @Component({
   selector: 'app-dashboard',
@@ -39,12 +40,23 @@ export class DashboardComponent implements OnInit {
     status: '',
     balanceRange: ''
   };
+  userName: string = '';
+  currentTime: string = '';
+  showNotification: boolean = false;
 
-  constructor(private dashboardService: DashboardService, private router: Router) { }
+  constructor(private dashboardService: DashboardService, private router: Router, private authService: AuthService) { }
 
   ngOnInit(): void {
     this.loadDashboardData();
     this.getDashboardChartsInfo();
+    
+    // Check if user just logged in
+    const justLoggedIn = localStorage.getItem('justLoggedIn');
+    if (justLoggedIn === 'true') {
+      this.showWelcomeNotification();
+      // Remove the flag so notification won't show on subsequent visits
+      localStorage.removeItem('justLoggedIn');
+    }
   }
 
   loadDashboardData() {
@@ -278,6 +290,29 @@ export class DashboardComponent implements OnInit {
     }
 
     this.filteredAccounts = filtered;
+  }
+
+  showWelcomeNotification() {
+    // Get username from auth service
+    this.userName = this.authService.username || 'User';
+    
+    // Set current time greeting
+    const hour = new Date().getHours();
+    if (hour < 12) {
+      this.currentTime = 'Good Morning';
+    } else if (hour < 18) {
+      this.currentTime = 'Good Afternoon';
+    } else {
+      this.currentTime = 'Good Evening';
+    }
+    
+    // Show notification
+    this.showNotification = true;
+    
+    // Hide notification after 5 seconds
+    setTimeout(() => {
+      this.showNotification = false;
+    }, 5000);
   }
 
   viewAccountDetails(accountId: string) {
