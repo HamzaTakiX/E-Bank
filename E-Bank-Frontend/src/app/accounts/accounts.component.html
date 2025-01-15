@@ -188,6 +188,10 @@
               <i class="bi bi-arrow-up-circle"></i>
               Credit
             </button>
+            <button class="filter-btn" [class.active]="selectedFilter === 'recent'" (click)="filterOperations('recent')">
+              <i class="bi bi-clock-history"></i>
+              Recent
+            </button>
           </div>
         </div>
 
@@ -213,7 +217,50 @@
         </div>
 
         <div class="table-responsive" *ngIf="accountDetails.accountOperationDTOS.length > 0">
-          <table class="table">
+          <div *ngIf="filteredOperations.length === 0" class="no-filtered-operations">
+            <div class="no-operations-content">
+              <div class="no-operations-icon">
+                <i class="bi" [ngClass]="{
+                  'bi-arrow-down-circle-fill text-danger': selectedFilter === 'debit',
+                  'bi-arrow-up-circle-fill text-success': selectedFilter === 'credit',
+                  'bi-clock-history text-primary': selectedFilter === 'recent',
+                  'bi-grid-fill text-primary': selectedFilter === 'all'
+                }"></i>
+              </div>
+              <div class="no-operations-text">
+                <h3>No {{selectedFilter | titlecase}} Operations</h3>
+                <p *ngIf="searchTerm" class="search-message">
+                  <i class="bi bi-search"></i>
+                  No {{selectedFilter}} operations match your search "{{searchTerm}}"
+                </p>
+                <p *ngIf="!searchTerm" class="info-message">
+                  <ng-container [ngSwitch]="selectedFilter">
+                    <ng-container *ngSwitchCase="'debit'">
+                      <i class="bi bi-info-circle"></i>
+                      This account has no debit transactions recorded.
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'credit'">
+                      <i class="bi bi-info-circle"></i>
+                      This account has no credit transactions recorded.
+                    </ng-container>
+                    <ng-container *ngSwitchCase="'recent'">
+                      <i class="bi bi-info-circle"></i>
+                      No recent transactions are available.
+                    </ng-container>
+                    <ng-container *ngSwitchDefault>
+                      <i class="bi bi-info-circle"></i>
+                      No transactions found.
+                    </ng-container>
+                  </ng-container>
+                </p>
+              </div>
+              <button class="btn btn-light clear-filters-btn" (click)="clearFilters()">
+                <i class="bi bi-arrow-counterclockwise"></i>
+                Clear Filters
+              </button>
+            </div>
+          </div>
+          <table class="table" *ngIf="filteredOperations.length > 0">
             <thead>
               <tr>
                 <th style="width: 15%">
@@ -234,8 +281,8 @@
                     <span>Type</span>
                   </div>
                 </th>
-                <th style="width: 25%" class="text-end">
-                  <div class="th-content justify-content-end">
+                <th style="width: 25%" class="text-center">
+                  <div class="th-content justify-content-center">
                     <i class="bi bi-currency-dollar"></i>
                     <span>Amount</span>
                   </div>
@@ -257,7 +304,7 @@
                     {{op.type}}
                   </span>
                 </td>
-                <td class="text-end">
+                <td class="text-center">
                   <span class="amount-badge" [ngClass]="op.type.toLowerCase()">
                     <i class="bi" [ngClass]="op.type === 'DEBIT' ? 'bi-arrow-down-circle' : 'bi-arrow-up-circle'"></i>
                     {{op.type === 'DEBIT' ? '-' : '+'}}{{op.amount | number:'1.2-2'}} $
@@ -312,7 +359,7 @@
           <label class="form-label">Amount</label>
           <div class="amount-input">
             <i class="bi bi-currency-dollar"></i>
-            <input type="number" formControlName="amount" class="form-control" placeholder="Enter amount">
+            <input type="number" formControlName="amount" class="form-control" placeholder="Enter amount" min="0" required>
           </div>
         </div>
 
@@ -325,7 +372,7 @@
         </div>
 
         <div class="form-actions">
-          <button type="submit" class="btn btn-primary" [disabled]="!operationFromGroup.valid">
+          <button type="submit" class="btn btn-primary" [disabled]="!operationFromGroup.get('operationType')?.value || !operationFromGroup.get('amount')?.value">
             <i class="bi bi-check-circle"></i>
             Submit Operation
           </button>

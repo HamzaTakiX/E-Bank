@@ -14,7 +14,7 @@ import {AuthService} from "../services/auth.service";
 export class AccountsComponent implements OnInit {
   accountFormGroup! : FormGroup;
   currentPage: number = 0;
-  pageSize: number = 5;
+  pageSize: number = 100;
   operationFromGroup! : FormGroup;
   errorMessage! :string ;
   isInitialState: boolean = true;
@@ -35,8 +35,8 @@ export class AccountsComponent implements OnInit {
       accountId : this.fb.control(null)
     });
     this.operationFromGroup = this.fb.group({
-      operationType : this.fb.control(''),
-      amount : this.fb.control(0),
+      operationType : this.fb.control(null),
+      amount : this.fb.control(null),
       description : this.fb.control(null)
     });
 
@@ -89,17 +89,22 @@ export class AccountsComponent implements OnInit {
   }
 
   handleAccountOperation() {
-    let accountId : string = this.accountFormGroup.value.accountId;
-    let operationType = this.operationFromGroup.value.operationType;
-    let amount = this.operationFromGroup.value.amount;
-    let description = this.operationFromGroup.value.description;
+    const accountId : string = this.accountFormGroup.value.accountId;
+    const operationType = this.operationFromGroup.value.operationType;
+    const amount = this.operationFromGroup.value.amount;
+    const description = this.operationFromGroup.value.description;
 
-    if(operationType == 'DEBIT') {
+    if (!operationType || !amount) {
+      this.showNotification('error', 'Please fill in all required fields');
+      return;
+    }
+
+    if(operationType === 'DEBIT') {
       this.accountService.debit(accountId, amount, description).subscribe({
         next : (data)=>{
           this.loadAccountData();
           this.operationFromGroup.reset();
-          this.operationFromGroup.patchValue({ operationType: '' });
+          this.operationFromGroup.patchValue({ operationType: null });
           this.showNotification('success', 'Debit operation completed successfully');
           this.scrollToTransactions();
         },
@@ -107,12 +112,12 @@ export class AccountsComponent implements OnInit {
           this.showNotification('error', err.error.message);
         }
       });
-    } else if(operationType == 'CREDIT') {
+    } else if(operationType === 'CREDIT') {
       this.accountService.credit(accountId, amount, description).subscribe({
         next : (data)=>{
           this.loadAccountData();
           this.operationFromGroup.reset();
-          this.operationFromGroup.patchValue({ operationType: '' });
+          this.operationFromGroup.patchValue({ operationType: null });
           this.showNotification('success', 'Credit operation completed successfully');
           this.scrollToTransactions();
         },
@@ -160,9 +165,9 @@ export class AccountsComponent implements OnInit {
   get filteredOperations() {
     if (!this.accountDetailsSubject.value?.accountOperationDTOS) return [];
 
-    let operations = this.accountDetailsSubject.value.accountOperationDTOS;
+    let operations = [...this.accountDetailsSubject.value.accountOperationDTOS];
 
-    // Apply search filter
+    // Apply search filter first
     if (this.searchTerm) {
       const term = this.searchTerm.toLowerCase();
       operations = operations.filter(op =>
@@ -173,8 +178,11 @@ export class AccountsComponent implements OnInit {
       );
     }
 
-    // Apply type filter
-    if (this.selectedFilter !== 'all') {
+    // Sort all operations by ID in descending order (most recent first)
+    operations.sort((a, b) => b.id - a.id);
+
+    // Apply type filter if not "all" or "recent"
+    if (this.selectedFilter !== 'all' && this.selectedFilter !== 'recent') {
       operations = operations.filter(op =>
         op.type?.toLowerCase() === this.selectedFilter
       );
