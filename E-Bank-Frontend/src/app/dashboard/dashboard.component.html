@@ -10,7 +10,7 @@
     <!-- Stats Cards -->
     <div class="row g-4 mb-4">
       <div class="col-md-3">
-        <div class="card border-0 stat-card bg-gradient-primary">
+        <div class="card border-0 stat-card bg-gradient-primary h-100">
           <div class="card-body p-4">
             <div class="d-flex align-items-center">
               <div class="icon-box bg-white bg-opacity-25 rounded-circle">
@@ -25,7 +25,7 @@
         </div>
       </div>
       <div class="col-md-3">
-        <div class="card border-0 stat-card bg-gradient-info">
+        <div class="card border-0 stat-card bg-gradient-info h-100">
           <div class="card-body p-4">
             <div class="d-flex align-items-center">
               <div class="icon-box bg-white bg-opacity-25 rounded-circle">
@@ -40,7 +40,7 @@
         </div>
       </div>
       <div class="col-md-3">
-        <div class="card border-0 stat-card bg-gradient-warning">
+        <div class="card border-0 stat-card bg-gradient-warning h-100">
           <div class="card-body p-4">
             <div class="d-flex align-items-center">
               <div class="icon-box bg-white bg-opacity-25 rounded-circle">
@@ -55,7 +55,7 @@
         </div>
       </div>
       <div class="col-md-3">
-        <div class="card border-0 stat-card bg-gradient-success">
+        <div class="card border-0 stat-card bg-gradient-success h-100">
           <div class="card-body p-4">
             <div class="d-flex align-items-center">
               <div class="icon-box bg-white bg-opacity-25 rounded-circle">
@@ -63,11 +63,9 @@
               </div>
               <div class="ms-3">
                 <p class="text-white mb-0 opacity-75 small text-uppercase">Total Balance</p>
-                <div class="balance-badge-container">
-                  <span class="balance-badge">
-                    <i class="bi bi-currency-dollar"></i>
-                    ${{ dashboardData.totalBalanceSum | number: '1.2-2' }}
-                  </span>
+                <div class="balance-display">
+                  <i class="bi bi-currency-dollar"></i>
+                  <span class="total-balance">{{ dashboardData.totalBalanceSum | numberFormat }}</span>
                 </div>
               </div>
             </div>
@@ -354,24 +352,42 @@
     }
   
     .stat-card {
+      height: 100%;
+      min-height: 140px;
       transition: all 0.3s ease;
-      box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
-      border-radius: 1rem;
+      display: flex;
+      flex-direction: column;
     }
-  
-    .stat-card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 1rem 3rem rgba(0,0,0,.175);
+
+    .stat-card .card-body {
+      display: flex;
+      align-items: center;
+      height: 100%;
     }
-  
-    .icon-box {
+
+    .stat-card .icon-box {
       width: 48px;
       height: 48px;
       display: flex;
       align-items: center;
       justify-content: center;
+      flex-shrink: 0;
     }
-  
+
+    .stat-card .ms-3 {
+      flex-grow: 1;
+    }
+
+    .balance-display {
+      display: flex;
+      align-items: center;
+      color: white;
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-top: 0.5rem;
+      white-space: nowrap;
+    }
+
     .chart-card, .table-card {
       box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
       border-radius: 1rem;
@@ -1338,5 +1354,24 @@
         opacity: 1;
         transform: translate3d(0, 0, 0);
       }
+    }
+    .balance-display {
+      display: flex;
+      align-items: center;
+      color: white;
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-top: 0.5rem;
+    }
+
+    .balance-display i {
+      font-size: 1.5rem;
+      margin-right: 0.25rem;
+    }
+
+    .total-balance {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: white;
     }
   </style>

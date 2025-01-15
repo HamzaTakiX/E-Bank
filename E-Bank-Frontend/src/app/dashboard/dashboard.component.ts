@@ -85,9 +85,7 @@ export class DashboardComponent implements OnInit {
   private formatDashboardData(data: any): any {
     const formattedData = { ...data };
 
-    if (formattedData.totalBalanceSum) {
-      formattedData.totalBalanceSum = this.formatNumber(formattedData.totalBalanceSum);
-    }
+    // Skip formatting totalBalanceSum to preserve decimal precision
     if (formattedData.monthlyTransactionSum) {
       formattedData.monthlyTransactionSum = this.formatNumber(formattedData.monthlyTransactionSum);
     }
