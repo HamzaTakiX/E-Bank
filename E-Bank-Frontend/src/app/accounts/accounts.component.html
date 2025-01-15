@@ -148,7 +148,7 @@
             <div class="info-content single-line">
               <span class="label">Balance:</span>
               <span class="badge balance-badge">
-                {{accountDetails.balance | number:'1.2-2'}} $ 
+                {{accountDetails.balance | number:'1.2-2'}} $
               </span>
             </div>
           </div>
@@ -240,12 +240,6 @@
                     <span>Amount</span>
                   </div>
                 </th>
-                <th style="width: 15%" class="text-center">
-                  <div class="th-content justify-content-center">
-                    <i class="bi bi-trash"></i>
-                    <span>Delete</span>
-                  </div>
-                </th>
               </tr>
             </thead>
             <tbody>
@@ -269,11 +263,6 @@
                     {{op.type === 'DEBIT' ? '-' : '+'}}{{op.amount | number:'1.2-2'}} $
                   </span>
                 </td>
-                <td class="text-center">
-                  <button class="btn-delete" title="Delete transaction" (click)="openDeleteModal(op)">
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </td>
               </tr>
             </tbody>
           </table>
@@ -281,43 +270,7 @@
       </div>
     </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div class="modal-overlay" *ngIf="showDeleteModal" (click)="closeDeleteModal()">
-      <div class="modal-content" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <div class="modal-icon">
-            <i class="bi bi-exclamation-triangle"></i>
-          </div>
-          <h3>Confirm Delete</h3>
-          <button class="close-btn" (click)="closeDeleteModal()">
-            <i class="bi bi-x"></i>
-          </button>
-        </div>
-        <div class="modal-body">
-          <p>Are you sure you want to delete this transaction?</p>
-          <div class="transaction-details" *ngIf="selectedOperation">
-            <div class="detail-item">
-              <span class="label">Transaction ID:</span>
-              <span class="value">#{{selectedOperation.id}}</span>
-            </div>
-            <div class="detail-item">
-              <span class="label">Amount:</span>
-              <span class="value" [ngClass]="selectedOperation.type.toLowerCase()">
-                {{selectedOperation.type === 'DEBIT' ? '-' : '+'}}{{selectedOperation.amount | number:'1.2-2'}} $
-              </span>
-            </div>
-            <div class="detail-item">
-              <span class="label">Date:</span>
-              <span class="value">{{selectedOperation.operationDate | date:'MMM dd, yyyy HH:mm'}}</span>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" (click)="closeDeleteModal()">Cancel</button>
-          <button class="btn btn-danger" (click)="deleteOperation()">Delete</button>
-        </div>
-      </div>
-    </div>
+
 
     <span *ngIf="authService.roles.includes('ADMIN')">
     <div class="operations-section" *ngIf="accountDetails$ | async as accountDetails">

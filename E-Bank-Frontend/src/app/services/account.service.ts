@@ -71,7 +71,7 @@ export class AccountService {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
-    return this.http.post<AccountDetails>(`${this.apiUrl}/accounts/${endpoint}`, null, { 
+    return this.http.post<AccountDetails>(`${this.apiUrl}/accounts/${endpoint}`, null, {
       params,
       headers
     });

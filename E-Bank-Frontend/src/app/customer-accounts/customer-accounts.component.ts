@@ -195,6 +195,7 @@ export class CustomerAccountsComponent implements OnInit {
 
   confirmDelete() {
     if (this.accountToDelete) {
+      console.log('Deleting account:', this.accountToDelete.id);
       this.accountService.deleteAccount(this.accountToDelete.id).pipe(
         catchError(err => {
           this.deleteError = `Failed to delete account: ${err.message}`;
@@ -211,7 +212,7 @@ export class CustomerAccountsComponent implements OnInit {
           this.showDeleteModal = false;
           this.accountToDelete = null;
           this.deleteError = null;
-          
+
           // Hide success message after a delay
           setTimeout(() => {
             this.successMessage = '';
@@ -226,7 +227,7 @@ export class CustomerAccountsComponent implements OnInit {
 
   deleteAccount(event: Event, accountId: string) {
     event.stopPropagation(); // Prevent opening operations modal
-    
+
     if (confirm('Are you sure you want to delete this account? This action cannot be undone.')) {
       this.accountService.deleteAccount(accountId)
         .pipe(
